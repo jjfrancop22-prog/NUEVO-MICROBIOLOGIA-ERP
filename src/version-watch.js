@@ -1,5 +1,5 @@
 // Consulta exclusivamente /version.json (sin lecturas Firebase).
-const CURRENT='1.0.277';
+const CURRENT='1.0.278';
 const INTERVAL=5*60*1000;
 let running=false, dismissedVersion='';
 function newer(remote,local){

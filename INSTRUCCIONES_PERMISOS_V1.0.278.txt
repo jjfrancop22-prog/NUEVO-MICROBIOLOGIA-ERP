@@ -1,0 +1,17 @@
+LAB-PSI V1.0.278 — Corrección de perfiles de analistas
+
+CAUSA: El panel de administración mostraba READ para permisos ausentes, aunque Firestore interpretaba NONE. Los usuarios antiguos no recibían permisos reales.
+
+PASOS:
+1. Publique el proyecto actualizado.
+2. Ingrese con una cuenta ADMIN activa.
+3. Administración > Directorio y permisos > busque María Elena, Nidia y Joe.
+4. Pulse «Aplicar perfil analista» en cada uno, revise los permisos y pulse «Guardar».
+5. Verifique que el usuario esté ACTIVO y que su cuenta de Firebase Authentication use exactamente el UID vinculado.
+6. Cierre y vuelva a abrir la sesión del analista.
+
+PERFIL SUGERIDO: samples WRITE; products/media/strains/quality/areas/equipment/communications READ. Puede ajustar individualmente antes de guardar. NO se conceden privilegios ADMIN.
+
+IMPORTANTE: las reglas de Firestore siguen siendo la autoridad. Esta actualización no altera ni borra datos, ni modifica automáticamente perfiles existentes. Si los analistas necesitan registrar medios, lotes o cepas, un administrador debe habilitar los WRITE pertinentes, revisando dependencias: mediaWrite requiere products WRITE.
+
+PRUEBAS: compilación local y revisión estática. No se verificó conexión real a su Firebase.
