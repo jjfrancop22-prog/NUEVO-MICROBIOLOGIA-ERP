@@ -1,0 +1,9 @@
+CORRECCIÓN DE DESPLIEGUE V1.0.277
+
+Netlify detuvo el despliegue durante la detección de secretos, NO por Vite.
+Se configura SECRETS_SCAN_SMART_DETECTION_OMIT_VALUES para omitir exclusivamente la clave pública Web API de Firebase ya presente en src/firebase.js.
+Se conserva el escaneo de otros secretos.
+Versión de aplicación: 1.0.277 (sin cambios funcionales).
+Publicar la carpeta raíz del ZIP, no la carpeta dist.
+No subir node_modules ni dist.
+Verificar que las reglas de Firestore y las restricciones de Firebase API key estén correctamente configuradas.

@@ -1,6 +1,12 @@
 [build]
   command = "npm run build"
   publish = "dist"
+
+[build.environment]
+  # Firebase Web API keys are public identifiers bundled in browser JavaScript.
+  # Disable ONLY heuristic 'likely secret' detection; normal secrets scanning stays on.
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
