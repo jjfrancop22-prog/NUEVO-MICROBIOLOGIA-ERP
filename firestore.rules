@@ -1,0 +1,516 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function profilePath() { return /databases/$(database)/documents/users/$(request.auth.uid); }
+    function active() { return signedIn() && exists(profilePath()) && get(profilePath()).data.active == true; }
+    function admin() { return active() && get(profilePath()).data.role == 'ADMIN'; }
+    match /users/{uid} {
+      allow get: if signedIn() && (request.auth.uid == uid || admin());
+      allow list: if admin();
+      allow create: if admin() && uid != request.auth.uid
+        && request.resource.data.keys().hasOnly(['name','userCode','role','active','permissions','updatedAt','updatedBy','createdAt'])
+        && request.resource.data.keys().hasAll(['name','userCode','role','active','permissions','updatedAt','updatedBy','createdAt'])
+        && validProfile() && request.resource.data.createdAt == request.time;
+      allow update: if admin() && uid != request.auth.uid && resource.data.role != 'ADMIN'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name','userCode','role','active','permissions','updatedAt','updatedBy'])
+        && validProfile();
+      allow delete: if false;
+      function validProfile() {
+        return request.resource.data.name is string && request.resource.data.name.size() <= 80
+          && request.resource.data.userCode is string && request.resource.data.userCode.size() > 0 && request.resource.data.userCode.size() <= 20
+          && request.resource.data.role in ['ADMIN','JEFE','ANALISTA']
+          && request.resource.data.active is bool
+          && request.resource.data.permissions is map
+          && request.resource.data.permissions.keys().hasOnly(['samples','products','media','strains','quality','areas','equipment','communications'])
+          && request.resource.data.permissions.values().hasOnly(['READ','WRITE','NONE'])
+          && request.resource.data.updatedBy == request.auth.uid
+          && request.resource.data.updatedAt == request.time;
+      }
+    }
+    match /userAudit/{auditId} {
+      allow read: if admin();
+      allow create: if admin() && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.targetUid is string
+        && request.resource.data.action in ['CREATE','UPDATE']
+        && request.resource.data.at == request.time
+        && request.resource.data.keys().hasOnly(['actorUid','targetUid','action','before','after','at']);
+      allow update, delete: if false;
+    }
+    // V1.0.5: mensajes privados, solo destinatario puede marcar lectura/atención.
+    match /communications/{messageId} {
+      function recipientAdmin() {
+        return exists(/databases/$(database)/documents/users/$(request.resource.data.recipientUid))
+          && get(/databases/$(database)/documents/users/$(request.resource.data.recipientUid)).data.active == true
+          && get(/databases/$(database)/documents/users/$(request.resource.data.recipientUid)).data.role == 'ADMIN';
+      }
+      allow get, list: if active() && (resource.data.recipientUid == request.auth.uid || resource.data.senderUid == request.auth.uid);
+      allow create: if active()
+        && request.resource.data.keys().hasOnly(['senderUid','recipientUid','subject','body','priority','createdAt','readAt','attendedAt'])
+        && request.resource.data.keys().hasAll(['senderUid','recipientUid','subject','body','priority','createdAt','readAt','attendedAt'])
+        && request.resource.data.senderUid == request.auth.uid
+        && request.resource.data.recipientUid is string
+        && request.resource.data.recipientUid != request.auth.uid
+        && (admin() || recipientAdmin())
+        && request.resource.data.subject is string && request.resource.data.subject.size() > 0 && request.resource.data.subject.size() <= 120
+        && request.resource.data.body is string && request.resource.data.body.size() > 0 && request.resource.data.body.size() <= 3000
+        && request.resource.data.priority in ['NORMAL','IMPORTANTE','CRITICA']
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.readAt == null && request.resource.data.attendedAt == null;
+      allow update: if active() && resource.data.recipientUid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['readAt','attendedAt'])
+        && (request.resource.data.readAt == resource.data.readAt || (resource.data.readAt == null && request.resource.data.readAt == request.time))
+        && (request.resource.data.attendedAt == resource.data.attendedAt || (resource.data.attendedAt == null && request.resource.data.attendedAt == request.time));
+      allow delete: if false;
+    }
+    // V1.0.12: permisos para recepcion, ingreso oficial, duplicados y borradores.
+    function sampleRead() {
+      return active() && (get(profilePath()).data.role in ['ADMIN','JEFE']
+        || get(profilePath()).data.permissions.get('samples', 'NONE') in ['READ','WRITE']);
+    }
+    function sampleWrite() {
+      return active() && (get(profilePath()).data.role in ['ADMIN','JEFE']
+        || get(profilePath()).data.permissions.get('samples', 'NONE') == 'WRITE');
+    }
+    function validSampleCreate(sampleId) {
+      return request.resource.data.keys().hasOnly([
+        'code','type','parameters','receivedDate','sampleTime','sampledBy','receivedTime',
+        'receivedBy','storage','notes','status','parentId','createdBy','createdAt',
+        'updatedAt','history','plannedDate','plannedTime','analyst','company','branch',
+        'description','assignedBy','analysis'])
+        && request.resource.data.keys().hasAll([
+          'code','type','parameters','status','parentId','createdBy','createdAt','updatedAt','history'])
+        && request.resource.data.code == sampleId
+        && request.resource.data.code is string && request.resource.data.code.size() > 0
+        && request.resource.data.code.size() <= 80
+        && request.resource.data.type is string
+        && request.resource.data.parameters is list && request.resource.data.parameters.size() > 0
+        && request.resource.data.parameters.size() <= 3
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.history is list && request.resource.data.history.size() == 1
+        && ((request.resource.data.status == 'RECEIVED'
+              && request.resource.data.parentId == null
+              && !sampleId.matches('.*-R$'))
+          || (request.resource.data.status == 'ASSIGNED'
+              && request.resource.data.parentId is string
+              && sampleId == request.resource.data.parentId + '-R'
+              && exists(/databases/$(database)/documents/microSamples/$(request.resource.data.parentId))
+              && get(/databases/$(database)/documents/microSamples/$(request.resource.data.parentId)).data.status in ['ASSIGNED','FINISHED']));
+    }
+    function immutableSampleFields() {
+      return request.resource.data.code == resource.data.code
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.createdBy == resource.data.createdBy
+        && request.resource.data.parentId == resource.data.parentId
+        && request.resource.data.updatedAt == request.time;
+    }
+    match /microSamples/{sampleId} {
+      allow get, list: if sampleRead();
+      allow create: if sampleWrite() && validSampleCreate(sampleId);
+      allow update: if sampleWrite() && immutableSampleFields()
+        && request.resource.data.history is list
+        && request.resource.data.history.size() == resource.data.history.size() + 1
+        && (
+          (resource.data.status == 'RECEIVED'
+            && request.resource.data.status == 'RECEIVED'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'type','parameters','receivedDate','sampleTime','sampledBy',
+              'receivedTime','receivedBy','storage','notes','updatedAt','history']))
+          || (resource.data.status == 'RECEIVED'
+            && request.resource.data.status == 'ASSIGNED'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'status','plannedDate','plannedTime','analyst','company','branch',
+              'description','assignedBy','updatedAt','history']))
+          || (resource.data.status == 'ASSIGNED'
+            && request.resource.data.status == 'ASSIGNED'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['plannedDate','plannedTime','analyst','company','branch','description','updatedAt','history']))
+          || (resource.data.status == 'ASSIGNED'
+            && request.resource.data.status == 'ASSIGNED'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'analysis','updatedAt','history']))
+          || (resource.data.status == 'ASSIGNED'
+            && request.resource.data.status == 'FINISHED'
+            && request.resource.data.analysis is map
+            && request.resource.data.analysis.nmpResults is map
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'status','analysis','updatedAt','history']))
+        );
+      allow delete: if false;
+    }
+    // V1.0.14: catálogo compartido de autocompletado, no contiene datos de resultados.
+    match /microCatalogs/{catalogId} {
+      allow get: if catalogId == 'officialEntry' && sampleRead();
+      allow list: if false;
+      allow create, update: if catalogId == 'officialEntry' && sampleWrite()
+        && request.resource.data.keys().hasOnly(['companies','branches','descriptions'])
+        && request.resource.data.keys().hasAll(['companies','branches','descriptions'])
+        && request.resource.data.companies is list && request.resource.data.companies.size() <= 250
+        && request.resource.data.branches is list && request.resource.data.branches.size() <= 250
+        && request.resource.data.descriptions is list && request.resource.data.descriptions.size() <= 250;
+      allow delete: if false;
+    }
+    // V1.0.83: estructura real del formulario de jornadas Q1/Q2/Q3.
+    // Identidad inmutable, autoría autenticada e historial incremental.
+    match /microDailyQuality/{controlId} {
+      allow get, list: if sampleRead();
+      allow create: if sampleWrite()
+        && request.resource.data.keys().hasOnly(['date','parameter','controls','sampleCodes','status','updatedBy','updatedAt','createdBy','createdAt','history'])
+        && request.resource.data.keys().hasAll(['date','parameter','controls','sampleCodes','status','updatedBy','updatedAt','createdBy','createdAt','history'])
+        && request.resource.data.date is string
+        && request.resource.data.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && request.resource.data.parameter in ['Coliformes fecales','Coliformes totales','E. coli']
+        && controlId == request.resource.data.date + '__' + (request.resource.data.parameter == 'Coliformes fecales' ? 'fecales' : request.resource.data.parameter == 'Coliformes totales' ? 'totales' : 'ecoli')
+        && request.resource.data.controls is map
+        && request.resource.data.controls.keys().hasAll(['Q1','Q2','Q3'])
+        && request.resource.data.sampleCodes is list
+        && request.resource.data.status in ['PENDIENTE','CONFORME','NO_CONFORME']
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.history is list
+        && request.resource.data.history.size() == 1
+        && request.resource.data.history[0].uid == request.auth.uid;
+      allow update: if sampleWrite()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['controls','sampleCodes','status','updatedBy','updatedAt','history'])
+        && request.resource.data.controls is map
+        && request.resource.data.controls.keys().hasAll(['Q1','Q2','Q3'])
+        && request.resource.data.sampleCodes is list
+        && request.resource.data.status in ['PENDIENTE','CONFORME','NO_CONFORME']
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.history is list
+        && request.resource.data.history.size() >= 1
+        && request.resource.data.history.size() <= 50
+        && request.resource.data.history[request.resource.data.history.size()-1].uid == request.auth.uid;
+      allow delete: if false;
+    }
+    // V1.0.25 Productos y lotes. Las transacciones actualizan saldo y generan un movimiento inmutable.
+    function productRead() { return active() && (get(profilePath()).data.role in ['ADMIN','JEFE'] || get(profilePath()).data.permissions.get('products','NONE') in ['READ','WRITE']); }
+    function productWrite() { return active() && (get(profilePath()).data.role in ['ADMIN','JEFE'] || get(profilePath()).data.permissions.get('products','NONE') == 'WRITE'); }
+    match /microProducts/{id} {
+      allow read: if productRead();
+      allow create, update: if productWrite() && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 120 && request.resource.data.type is string && request.resource.data.updatedBy == request.auth.uid;
+      allow delete: if false;
+    }
+    // V1.0.29: contador anual transaccional, solo incrementos unitarios.
+    match /microCounters/{counterId} {
+      allow get: if productWrite() && counterId.matches('^lots-[0-9]{4}$');
+      allow list, delete: if false;
+      allow create: if productWrite() && counterId.matches('^lots-[0-9]{4}$')
+        && request.resource.data.keys().hasOnly(['lastNumber','year','updatedBy','updatedAt'])
+        && request.resource.data.lastNumber == 1
+        && request.resource.data.year is int
+        && counterId == 'lots-' + string(request.resource.data.year)
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time;
+      allow update: if productWrite() && counterId.matches('^lots-[0-9]{4}$')
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastNumber','updatedBy','updatedAt'])
+        && request.resource.data.lastNumber == resource.data.lastNumber + 1
+        && request.resource.data.year == resource.data.year
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time;
+    }
+    // V1.0.32: tres transiciones explícitas; no se permite alterar identidad del frasco.
+    match /microLots/{id} {
+      allow read: if productRead();
+      allow create: if productWrite() && id.matches('^R-[0-9]{4}-[0-9]{3,6}$')
+        && request.resource.data.code == id
+        && request.resource.data.productId is string
+        && request.resource.data.quantity is number
+        && request.resource.data.initialQuantity is number
+        && request.resource.data.initialQuantity > 0
+        && request.resource.data.quantity == request.resource.data.initialQuantity
+        && request.resource.data.updatedBy == request.auth.uid;
+      allow update: if productWrite()
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity >= 0
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'quantity','initialQuantity','updatedAt','updatedBy','status','expiry',
+          'location','notes','openedAt','openedByUid','openedByCode','openedRecordedAt','openingReason','effectiveExpiry'])
+        && (
+          // Corrección de recepción: solo sin abrir y sin consumo previo.
+          (!resource.data.keys().hasAny(['openedAt'])
+            && resource.data.quantity == resource.data.initialQuantity
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'quantity','initialQuantity','expiry','location','updatedAt','updatedBy'])
+            && request.resource.data.initialQuantity is number
+            && request.resource.data.initialQuantity > 0
+            && request.resource.data.quantity == request.resource.data.initialQuantity)
+          ||
+          // Apertura: únicamente una vez, conservando cantidad y datos de recepción.
+          (!resource.data.keys().hasAny(['openedAt'])
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'openedAt','openedByUid','openedByCode','openedRecordedAt','openingReason','effectiveExpiry','updatedAt','updatedBy'])
+            && request.resource.data.openedAt is string
+            && request.resource.data.openedAt.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+            && request.resource.data.openedAt >= resource.data.receivedDate
+            && request.resource.data.openedByUid == request.auth.uid
+            && request.resource.data.openedByCode is string
+            && request.resource.data.openedRecordedAt == request.time
+            && request.resource.data.openingReason is string
+            && request.resource.data.openingReason.size() <= 300
+            && request.resource.data.quantity == resource.data.quantity)
+          ||
+          // Disposición definitiva: registra el saldo restante (incluso cero).
+          (resource.data.status != 'DESCARTADO'
+            && request.resource.data.status == 'DESCARTADO'
+            && request.resource.data.quantity == 0
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'quantity','status','updatedAt','updatedBy']))
+          ||
+          // Consumo: solo después de apertura; jamás aumenta el saldo.
+          (resource.data.keys().hasAny(['openedAt'])
+            && resource.data.status != 'DESCARTADO'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'quantity','updatedAt','updatedBy'])
+            && request.resource.data.quantity < resource.data.quantity)
+        );
+      allow delete: if false;
+    }
+    match /microMovements/{id} {
+      allow read: if productRead();
+      allow create: if productWrite()
+        && request.resource.data.lotId is string
+        && request.resource.data.quantity is number
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.kind in ['CONSUMO','APERTURA','CORRECCION','DESCARTE']
+        && (request.resource.data.kind in ['CONSUMO','DESCARTE']
+          ? request.resource.data.quantity >= 0
+          : request.resource.data.quantity == 0);
+      allow update, delete: if false;
+    }
+    // V1.0.35 Medios preparados: secuencia por formulación y año, y liberación controlada.
+    function mediaRead() { return active() && (get(profilePath()).data.role in ['ADMIN','JEFE'] || get(profilePath()).data.permissions.get('media','NONE') in ['READ','WRITE']); }
+    function mediaWrite() { return active() && productWrite() && (get(profilePath()).data.role in ['ADMIN','JEFE'] || get(profilePath()).data.permissions.get('media','NONE') == 'WRITE'); }
+    // V1.0.54: cepas; escrituras restringidas por rol y sin eliminación.
+    function strainsRead() { return active() && (get(profilePath()).data.role in ['ADMIN','JEFE'] || get(profilePath()).data.permissions.get('strains','NONE') in ['READ','WRITE'] || mediaRead()); }
+    function strainsWrite() { return active() && (get(profilePath()).data.role in ['ADMIN','JEFE'] || get(profilePath()).data.permissions.get('strains','NONE') == 'WRITE'); }
+    match /microStrainPreparations/{id} {
+      allow read: if strainsRead();
+      allow create: if strainsWrite() && request.resource.data.actorUid == request.auth.uid && request.resource.data.createdAt == request.time
+        && request.resource.data.quantity is int && request.resource.data.quantity >= 1 && request.resource.data.quantity <= 100
+        && request.resource.data.reserveQuantity is int
+        && request.resource.data.reserveQuantity >= 0
+        && request.resource.data.reserveQuantity <= request.resource.data.quantity
+        && request.resource.data.available is int
+        && request.resource.data.available == request.resource.data.quantity - request.resource.data.reserveQuantity
+        && request.resource.data.status in ['APTA','NO_APTA'] && request.resource.data.expiry >= request.resource.data.date;
+      allow update: if strainsWrite() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['available','updatedAt','updatedBy'])
+        && request.resource.data.available == resource.data.available - 1 && request.resource.data.available >= 0
+        && request.resource.data.updatedBy == request.auth.uid && request.resource.data.updatedAt == request.time;
+      allow delete: if false;
+    }
+    match /microStrainAnUses/{id} {
+      allow read: if strainsRead();
+      allow create: if strainsWrite() && request.resource.data.actorUid == request.auth.uid && request.resource.data.createdAt == request.time
+        && request.resource.data.purpose in ['PREPARACION_CEPA','REACTIVACION']
+        && exists(/databases/$(database)/documents/microMediaPreparations/$(request.resource.data.preparationId))
+        && get(/databases/$(database)/documents/microMediaPreparations/$(request.resource.data.preparationId)).data.mediumId == 'AN'
+        && get(/databases/$(database)/documents/microMediaPreparations/$(request.resource.data.preparationId)).data.status in ['LIBERADO','LIBERADO_HISTORICO'];
+      allow update, delete: if false;
+    }
+    match /microStrainReactivations/{id} {
+      allow read: if strainsRead();
+      allow create: if strainsWrite() && request.resource.data.actorUid == request.auth.uid && request.resource.data.createdAt == request.time
+        && request.resource.data.status in ['APTA','NO_APTA'] && request.resource.data.validUntil >= request.resource.data.date
+        && request.resource.data.atcc is string && request.resource.data.preparationId is string
+        && exists(/databases/$(database)/documents/microStrainPreparations/$(request.resource.data.preparationId));
+      allow update, delete: if false;
+    }
+    match /microMediaCounters/{id} {
+      allow get: if mediaRead();
+      allow list, delete: if false;
+      allow create: if mediaWrite() && request.resource.data.lastNumber is int && request.resource.data.lastNumber >= 1 && request.resource.data.lastNumber <= 10000 && request.resource.data.updatedBy == request.auth.uid && request.resource.data.updatedAt == request.time;
+      allow update: if mediaWrite() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastNumber','updatedBy','updatedAt']) && request.resource.data.lastNumber > resource.data.lastNumber && request.resource.data.lastNumber <= resource.data.lastNumber + 10000 && request.resource.data.updatedBy == request.auth.uid && request.resource.data.updatedAt == request.time;
+    }
+    match /microStrainBhiUses/{id} {
+      allow read: if strainsRead();
+      allow create: if strainsWrite() && request.resource.data.reference == id
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.quantityMl in [5,10]
+        && request.resource.data.kind in ['PREPARACION_CEPA','REACTIVACION_CEPA'];
+      allow update, delete: if false;
+    }
+    match /microMediaInventoryMovements/{id} {
+      allow read: if mediaRead();
+      allow create: if mediaWrite() && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.units is int && request.resource.data.units > 0
+        && request.resource.data.kind in ['CONSUMO','BAJA']
+        && request.resource.data.reason is string && request.resource.data.reason.size() > 0
+        && request.resource.data.reason.size() <= 300;
+      allow update, delete: if false;
+    }
+    // V1.0.141: Kardex inmutable de consumos y bajas de medios preparados.
+    match /microMediaInventoryMovements/{id} {
+      allow read: if mediaRead();
+      allow create: if mediaWrite()
+        && request.resource.data.keys().hasOnly(['preparationId','kind','units','reason','effectiveDate','actorUid','actorCode','createdAt'])
+        && request.resource.data.keys().hasAll(['preparationId','kind','units','reason','effectiveDate','actorUid','actorCode','createdAt'])
+        && request.resource.data.preparationId is string
+        && request.resource.data.kind in ['CONSUMO','BAJA']
+        && request.resource.data.units is int && request.resource.data.units > 0
+        && request.resource.data.reason is string && request.resource.data.reason.size() > 0 && request.resource.data.reason.size() <= 1000
+        && request.resource.data.effectiveDate is string
+        && request.resource.data.effectiveDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.actorCode is string
+        && request.resource.data.createdAt == request.time
+        && exists(/databases/$(database)/documents/microMediaPreparations/$(request.resource.data.preparationId));
+      allow update, delete: if false;
+    }
+    match /microMediaQcCorrections/{id} {
+      allow read: if mediaRead();
+      allow create: if admin() && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.reason is string
+        && request.resource.data.reason.size() >= 10
+        && request.resource.data.reason.size() <= 500
+        && request.resource.data.preparationId is string;
+      allow update, delete: if false;
+    }
+    match /microMediaPreparations/{id} {
+      allow read: if mediaRead();
+      allow create: if mediaWrite() && request.resource.data.code == id && request.resource.data.actorUid == request.auth.uid && request.resource.data.status == 'PENDIENTE' && request.resource.data.qc == 'PENDIENTE' && request.resource.data.mass is number && request.resource.data.mass > 0 && request.resource.data.createdAt == request.time && request.resource.data.updatedAt == request.time;
+      // V1.0.219: rectificación QC únicamente ADMIN, con auditoría obligatoria.
+      allow update: if admin() && resource.data.qc in ['CONFORME','NO_CONFORME']
+        && request.resource.data.qc in ['CONFORME','NO_CONFORME']
+        && request.resource.data.status == resource.data.status
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'noTurbidity','noMicroorganisms','sterility','appearance','qc','qcNotes',
+          'measuredPh','qcLimitsApplied','qcEvaluationDate','qcEvaluatedAt',
+          'qcEvaluatedBy','qcEvaluatedByCode','qcCorrectionCount','qcCorrectedAt',
+          'qcCorrectedBy','qcCorrectionReason','qcCorrectionAuditId','updatedAt','updatedBy'])
+        && request.resource.data.qcCorrectionCount == resource.data.get('qcCorrectionCount',0)+1
+        && request.resource.data.qcCorrectedAt == request.time
+        && request.resource.data.qcCorrectedBy == request.auth.uid
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.qcCorrectionReason is string
+        && request.resource.data.qcCorrectionReason.size() >= 10
+        && request.resource.data.qcCorrectionReason.size() <= 500
+        && request.resource.data.qcEvaluationDate >= resource.data.date
+        && request.resource.data.qcEvaluationDate <= resource.data.expiry
+        && getAfter(/databases/$(database)/documents/microMediaQcCorrections/$(request.resource.data.qcCorrectionAuditId)).data.preparationId == id;
+      // V1.0.179: reapertura documental restringida a ADMIN, sin restitución de unidades.
+      allow update: if admin() && resource.data.status in ['CERRADO','BAJA']
+        && request.resource.data.status in ['LIBERADO','LIBERADO_HISTORICO']
+        && request.resource.data.usedUnits == resource.data.usedUnits
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'status','reopenedAt','reopenedBy','reopenReason','reopenPreviousStatus','updatedAt','updatedBy'])
+        && request.resource.data.reopenedBy == request.auth.uid
+        && request.resource.data.reopenPreviousStatus == resource.data.status
+        && request.resource.data.reopenReason is string
+        && request.resource.data.reopenReason.size() >= 10
+        && request.resource.data.reopenReason.size() <= 500
+        && request.resource.data.reopenedAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.updatedBy == request.auth.uid;
+      allow update: if (mediaWrite() && resource.data.status in ['LIBERADO','LIBERADO_HISTORICO']
+        && (request.resource.data.status in ['BAJA','CERRADO'] || request.resource.data.status == resource.data.status)
+        && request.resource.data.usedUnits is int
+        && request.resource.data.usedUnits > resource.data.get('usedUnits',0)
+        && request.resource.data.usedUnits <= resource.data.count
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time
+        && ((request.resource.data.status == resource.data.status
+            && request.resource.data.usedUnits < resource.data.count
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usedUnits','updatedAt','updatedBy']))
+          || ((request.resource.data.usedUnits == resource.data.count || resource.data.mediumId == 'AN')
+            && request.resource.data.status in ['CERRADO','BAJA'] && request.resource.data.closedBy == request.auth.uid
+            && request.resource.data.closedAt == request.time
+            && request.resource.data.closedReason is string
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usedUnits','status','closedBy','closedAt','closedReason','updatedAt','updatedBy']))))
+        || (strainsWrite() && resource.data.mediumId == 'BHI' && resource.data.status in ['PENDIENTE','LIBERADO','LIBERADO_HISTORICO'] && resource.data.qc == 'CONFORME' && resource.data.performance != 'NO_CONFORME'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['bhiUsedMl','updatedAt','updatedBy'])
+        && request.resource.data.bhiUsedMl is number
+        && request.resource.data.bhiUsedMl > resource.data.get('bhiUsedMl',0)
+        && request.resource.data.bhiUsedMl <= resource.data.volume
+        && request.resource.data.bhiUsedMl - resource.data.get('bhiUsedMl',0) in [5,10]
+        && request.resource.data.updatedBy == request.auth.uid && request.resource.data.updatedAt == request.time)
+        || (mediaWrite() && resource.data.status == 'PENDIENTE' && ((get(profilePath()).data.role == 'ADMIN' && !resource.data.keys().hasAny(['canonicalCode']) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['canonicalCode','legacyCode','codeMigratedAt','codeMigratedBy']) && request.resource.data.canonicalCode is string && request.resource.data.canonicalCode.matches('^[A-Z0-9]+-[0-9]{2}-[0-9]{3,}$') && request.resource.data.legacyCode == resource.data.code && request.resource.data.codeMigratedBy == request.auth.uid && request.resource.data.codeMigratedAt == request.time) || (request.resource.data.updatedBy == request.auth.uid && request.resource.data.updatedAt == request.time && (
+        // V1.0.48: rendimiento único, documentado, inmutable y sujeto a permisos.
+        (resource.data.performanceRequired == true
+          && resource.data.performance == 'PENDIENTE'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['performanceResults','performance','performanceEvaluationDate','performanceEvaluatedAt','performanceEvaluatedBy','performanceEvaluatedByCode','evidence','updatedAt','updatedBy'])
+          && request.resource.data.performance in ['CONFORME','NO_CONFORME']
+          && request.resource.data.performanceResults is map
+          && request.resource.data.performanceResults.keys().hasOnly(['PRODUCTIVIDAD','SELECTIVIDAD','ESPECIFICIDAD'])
+          && request.resource.data.performanceResults.keys().hasAll(resource.data.mediumId in ['AS1','AC1','LMX'] ? ['PRODUCTIVIDAD','SELECTIVIDAD','ESPECIFICIDAD'] : ['PRODUCTIVIDAD'])
+          && request.resource.data.performanceResults.size() == (resource.data.mediumId in ['AS1','AC1','LMX'] ? 3 : 1)
+          && request.resource.data.performanceEvaluationDate is string
+          && request.resource.data.performanceEvaluationDate >= resource.data.date
+          && request.resource.data.performanceEvaluationDate <= resource.data.expiry
+          && request.resource.data.performanceEvaluatedBy == request.auth.uid
+          && request.resource.data.performanceEvaluatedByCode is string
+          && request.resource.data.performanceEvaluatedAt == request.time
+          && request.resource.data.evidence is string
+          && request.resource.data.evidence.size() >= 5
+          && request.resource.data.evidence.size() <= 1000)
+        ||
+        // V1.0.45: QC documentado, con fecha histórica y valores verificables.
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'noTurbidity','noMicroorganisms','sterility','appearance','qc',
+          'qcNotes','measuredPh','qcLimitsApplied','qcEvaluationDate',
+          'qcEvaluatedAt','qcEvaluatedBy','qcEvaluatedByCode','updatedAt','updatedBy'])
+          // Comprobar campos presentes en el documento final, no todos como cambios.
+          // affectedKeys() omite valores que ya eran idénticos (p. ej. pH o fecha).
+          && request.resource.data.keys().hasAll([
+            'qc','measuredPh','qcLimitsApplied','qcEvaluationDate',
+            'qcEvaluatedAt','qcEvaluatedBy','qcEvaluatedByCode','updatedAt','updatedBy'])
+          && resource.data.qc == 'PENDIENTE'
+          && request.resource.data.qc in ['CONFORME','NO_CONFORME']
+          && request.resource.data.noTurbidity in ['CUMPLE','NO_CUMPLE']
+          && request.resource.data.noMicroorganisms in ['CUMPLE','NO_CUMPLE']
+          && request.resource.data.sterility in ['CUMPLE','NO_CUMPLE']
+          && request.resource.data.appearance in ['CUMPLE','NO_CUMPLE']
+          && request.resource.data.measuredPh is number
+          && request.resource.data.measuredPh >= 0 && request.resource.data.measuredPh <= 14
+          && request.resource.data.qcLimitsApplied is map
+          && request.resource.data.qcLimitsApplied.keys().hasOnly(['min','max'])
+          && request.resource.data.qcLimitsApplied.min is number
+          && request.resource.data.qcLimitsApplied.max is number
+          && request.resource.data.qcLimitsApplied.min <= request.resource.data.qcLimitsApplied.max
+          && request.resource.data.qcEvaluationDate is string
+          && request.resource.data.qcEvaluationDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+          && request.resource.data.qcEvaluationDate >= resource.data.date
+          && request.resource.data.qcEvaluationDate <= resource.data.expiry
+          && request.resource.data.qcEvaluatedBy == request.auth.uid
+          && request.resource.data.qcEvaluatedByCode == get(profilePath()).data.userCode
+          && request.resource.data.qcEvaluatedAt == request.time
+          && request.resource.data.qcNotes is string
+          && request.resource.data.qcNotes.size() <= 2000
+          && (request.resource.data.qc == 'NO_CONFORME' || (
+            request.resource.data.noTurbidity == 'CUMPLE'
+            && request.resource.data.noMicroorganisms == 'CUMPLE'
+            && request.resource.data.sterility == 'CUMPLE'
+            && request.resource.data.appearance == 'CUMPLE'
+            && request.resource.data.measuredPh >= request.resource.data.qcLimitsApplied.min
+            && request.resource.data.measuredPh <= request.resource.data.qcLimitsApplied.max)))
+        ||         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['qc','performance','evidence','updatedAt','updatedBy']) && request.resource.data.qc in ['PENDIENTE','CONFORME','NO_CONFORME'] && request.resource.data.performance in ['PENDIENTE','CONFORME','NO_CONFORME','NO_APLICA'] && (!resource.data.performanceRequired || request.resource.data.performance != 'NO_APLICA') && request.resource.data.evidence is string)
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','historicalReleaseDate','releasedAt','releasedBy','updatedAt','updatedBy'])
+          && request.resource.data.status == 'LIBERADO_HISTORICO'
+          && resource.data.qc == 'CONFORME'
+          && (!resource.data.performanceRequired || resource.data.performance == 'CONFORME')
+          && resource.data.qcEvaluationDate is string
+          && resource.data.qcEvaluatedBy is string
+          && request.resource.data.historicalReleaseDate is string
+          && request.resource.data.historicalReleaseDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+          && request.resource.data.historicalReleaseDate >= resource.data.qcEvaluationDate
+          && request.resource.data.historicalReleaseDate <= resource.data.expiry
+          && request.resource.data.releasedBy == request.auth.uid
+          && request.resource.data.releasedAt == request.time)
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','releasedAt','releasedBy','updatedAt','updatedBy']) && request.resource.data.status in ['PENDIENTE','LIBERADO'] && resource.data.qc == 'CONFORME' && resource.data.performance != 'NO_CONFORME' && (!resource.data.performanceRequired || resource.data.performance == 'CONFORME') && resource.data.qcEvaluationDate is string && resource.data.qcEvaluatedBy is string && request.resource.data.releasedBy == request.auth.uid && request.resource.data.releasedAt == request.time)
+      ))));
+      allow delete: if false;
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

@@ -1,0 +1,7 @@
+/* V1.0.257 · Navegación priorizada: preparación, reactivación, inventario y trazabilidad, historial */
+.strain257-switch{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;background:#edf6fd;border:1px solid #c7dff3;border-left:4px solid #258dc4;border-radius:12px;padding:15px 18px;margin:14px 0 18px;color:#173f67}
+.strain257-switch>div:first-child{display:grid;gap:4px}.strain257-switch strong{font-size:16px}.strain257-switch small{color:#57748c;font-size:13px}.strain257-switch-actions{display:flex;gap:9px;flex-wrap:wrap}
+.strain257-switch-actions button{border:1px solid #b8d5ec;background:white;color:#19527d;padding:10px 14px;border-radius:9px;font-weight:700;cursor:pointer}
+.strain257-switch-actions button.active{background:#17699f;border-color:#17699f;color:white}
+.strain257-switch-actions button:hover{box-shadow:0 2px 8px #164a7324}
+@media(max-width:720px){.strain257-switch-actions{width:100%}.strain257-switch-actions button{flex:1}}

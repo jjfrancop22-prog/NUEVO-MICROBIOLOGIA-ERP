@@ -1,0 +1,10 @@
+/* LAB-PSI · Medios de cultivo V1.0.247 · Capa visual no invasiva */
+.media-pro-247{--m247:#196ca5;--m247-deep:#153b66;--m247-soft:#eaf5fd;--m247-line:#cbdff0}
+.media-pro-247 .media-247-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 17px;margin:15px 0;background:#f7fbff;border:1px solid var(--m247-line);border-left:4px solid #3295ca;border-radius:12px}
+.media-247-toolbar-copy{display:flex;flex-direction:column;gap:4px}.media-247-toolbar-copy strong{font-size:16px;color:var(--m247-deep)}.media-247-toolbar-copy span{font-size:13px;color:#55718a}
+.media-247-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.media-pro-247 .media-247-action{background:#fff!important;color:var(--m247-deep)!important;border:1px solid var(--m247-line)!important;border-radius:9px;padding:9px 13px;font-weight:650;cursor:pointer}.media-pro-247 .media-247-action:hover{background:var(--m247-soft)!important;border-color:#6daed7!important}
+.media-247-note{font-size:12px;color:#3c6585;max-width:240px}.media-pro-247 .product-tabs>button.active{background:var(--m247)!important;border-color:var(--m247)!important;color:#fff!important}
+.media-pro-247 .media-247-placeholder{padding:23px 15px;min-height:115px;background:#f8fbff;border-color:#d4e6f3}.media-pro-247 .media-247-placeholder span{font-size:21px}.media-pro-247 .media-247-placeholder strong{font-size:15px}.media-pro-247 .media-247-placeholder p{font-size:13px}
+.media-pro-247 button:focus-visible{outline:3px solid #8bc9f0;outline-offset:2px}
+.media-pro-247 .media-246-modal-head{background:linear-gradient(110deg,#123b68,#2077b0)}
+@media(max-width:800px){.media-pro-247 .media-247-toolbar{flex-direction:column;align-items:stretch}.media-247-actions{justify-content:flex-start}}

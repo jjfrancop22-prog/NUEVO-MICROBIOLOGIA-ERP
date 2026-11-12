@@ -1,0 +1,45 @@
+/* PSI NEXTGEN V1.0.222 — capa visual azul claro, sin operaciones de datos */
+:root{--psi-navy:#153e68;--psi-blue:#287fb5;--psi-green:#238d77;--psi-bg:#f3f8fd;--psi-border:#dce9f4;--psi-text:#243e58}
+body,.layout,.content{background:#f3f8fd!important}
+.sidebar{background:linear-gradient(180deg,#143e69 0%,#102d51 100%)!important}
+.sidebar .brand{background:#12375e!important}
+.sidebar .nav-item.selected{background:#e7f4ff!important;box-shadow:inset 3px 0 #45a6d7!important}
+.sidebar .nav-item.selected .nav-icon{color:#227da9!important}
+.topbar{border-bottom:1px solid #dce9f4!important}
+.psi-page-context{background:#fff;border-color:#dce9f4;margin-bottom:15px;padding:10px 15px}
+.psi-context-badge{background:#ecf6fc;color:#276e9b;border-color:#d4e8f6}
+#page-content>.eyebrow{color:#3985b0!important;font-size:11px}
+#page-content>h1{font-size:clamp(23px,2vw,30px)!important;margin-top:5px;margin-bottom:5px}
+#page-content>.intro{font-size:13px;margin-bottom:13px}
+#page-content>.sample-kpis{gap:11px!important;margin-bottom:12px!important}
+#page-content>.sample-kpis>.card{padding:13px 15px!important;min-height:78px!important;border-top-color:#4d9dc8!important;background:linear-gradient(180deg,#fff,#fbfdff)!important}
+#page-content>.sample-kpis>.card h2{font-size:27px!important;line-height:1.1;margin:5px 0 0!important;color:#17476f!important}
+#page-content>.sample-kpis>.card small{color:#5c7690!important;font-size:12px!important}
+#page-content>.sample-kpis>.card:nth-child(4n+2){border-top-color:#64a9c9!important}
+#page-content>.sample-kpis>.card:nth-child(4n+3){border-top-color:#e6b35d!important}
+#page-content>.sample-kpis>.card:nth-child(4n+4){border-top-color:#8395c8!important}
+#page-content>.sample-info{border-radius:9px!important;background:#edf6fc!important;border-color:#d8eaf7!important;color:#42647c!important;font-size:12px!important;padding:9px 12px!important}
+.micro-nav-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:16px 0 10px!important}
+.micro-nav-heading strong{font-size:16px;color:#1d496c}
+.micro-nav-heading small{font-size:12px;color:#678398}
+.micro-workflow-tabs{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:#a8cde3 transparent;gap:8px!important;padding:4px 2px 12px!important;scroll-snap-type:x proximity}
+.micro-workflow-tab{flex:0 0 auto!important;min-width:155px!important;max-width:220px;scroll-snap-align:start;white-space:normal!important;border:1px solid #d6e6f0!important;background:#fff!important;border-radius:11px!important;color:#315b75!important;min-height:47px!important}
+.micro-workflow-tab.is-active,.micro-workflow-tab[aria-pressed="true"]{background:#e5f3fc!important;color:#145c88!important;border-color:#7cb9dc!important;box-shadow:inset 0 -3px #268ac0!important}
+.micro-workflow-tab strong{background:#eaf3f9!important;color:#326a8c!important;border-radius:20px!important}
+.micro-workflow-tab.is-active strong{background:#cde9fa!important}
+#page-content .sample-section{border-top:3px solid #4c9dc8!important;padding:clamp(13px,1.4vw,23px)!important}
+.reception-heading,.workflow-heading{gap:15px!important;align-items:flex-start!important}
+.reception-kicker,.workflow-kicker{color:#3183ad!important}
+.reception-group-title{background:#eaf4fb!important;color:#22678e!important;border-left:3px solid #469bc5!important;border-radius:7px!important;padding:10px 12px!important}
+.reception-required{background:#f0f7fd!important;color:#47738f!important;border-color:#d5e8f5!important}
+#page-content .reception-form label{color:#385b70!important}
+#page-content .reception-form input:not([type=checkbox]),#page-content .reception-form select{min-height:39px;background:#fff!important;border-color:#d0e0eb!important}
+#page-content .reception-form fieldset{background:#f8fbfe!important;border-color:#d5e7f1!important;border-radius:10px!important}
+#page-content .reception-form input:focus-visible,#page-content .reception-form select:focus-visible{outline:2px solid #66b0d5;outline-offset:1px}
+#page-content .sample-actions button{background:#227fae!important;color:#fff!important}
+#page-content .sample-table-wrap{overflow-x:auto;max-width:100%}
+#page-content .sample-table thead th{background:#e7f2fa!important;color:#285977!important}
+#page-content .sample-table tbody tr:hover{background:#edf7fe!important}
+@media(max-width:900px){.micro-nav-toolbar{flex-wrap:wrap}.micro-nav-search{width:100%}.micro-workflow-tab{min-width:145px!important}}
+@media(max-width:760px){#page-content>.sample-kpis>.card{min-height:70px!important}.reception-heading,.workflow-heading{flex-wrap:wrap}.micro-workflow-tabs{margin-inline:-2px}}
+@media(prefers-reduced-motion:reduce){.micro-workflow-tabs{scroll-behavior:auto!important}}

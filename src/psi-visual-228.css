@@ -1,0 +1,16 @@
+/* PSI NEXTGEN 1.0.228 — expediente analítico y formularios */
+.psi-228-dialog{width:min(1160px,96vw);max-width:1160px;max-height:92dvh;padding:0;border:1px solid #bfd7f0;border-radius:20px;background:#f6faff;color:#183957;box-shadow:0 28px 90px #0b376044;overflow:hidden}
+.psi-228-dialog::backdrop{background:#102e4b99;backdrop-filter:blur(4px)}
+.psi-228-dialog-head{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 26px;background:linear-gradient(115deg,#e2f1ff,#f5faff);border-bottom:1px solid #c9def2}
+.psi-228-dialog-head h2{margin:3px 0;color:#164d83;font-size:23px}
+.psi-228-dialog-head p{margin:0;color:#526d87;font-size:13px}
+.psi-228-dialog-head small{letter-spacing:.1em;font-weight:800;color:#3977af}
+.psi-228-dialog-head button{white-space:nowrap}
+.psi-228-dialog-content{overflow:auto;max-height:calc(92dvh - 100px);padding:20px 26px 30px}
+.psi-228-dialog-content .sample-analysis{background:#fff;border:1px solid #d8e7f7;border-radius:15px;padding:22px}
+.psi-228-dialog-content .micro-stage{border:1px solid #d3e5f7;border-radius:12px;background:#f7fbff;padding:14px}
+.psi-228-dialog-content input:focus,.psi-228-dialog-content select:focus{outline:2px solid #65a9e9;outline-offset:1px}
+#sample-reception:focus-within,#sample-assignment:focus-within{border-radius:14px;box-shadow:0 0 0 2px #c7e5ff66}
+#micro-results-body tr:not([hidden]):hover{background:#edf6ff}
+.micro-modern-section .sample-table th{background:#e9f3ff;color:#194e7c}
+@media(max-width:700px){.psi-228-dialog-head{padding:12px 16px}.psi-228-dialog-content{padding:12px}.psi-228-dialog-content .sample-analysis{padding:12px}.psi-228-dialog-head h2{font-size:18px}}

@@ -1,0 +1,27 @@
+/* LAB-PSI 1.0.231 · Interfaz modal monocromática azul. Sin cambios de lógica. */
+#psi-sample-edit-workspace.psi-229-dialog{width:min(1000px,calc(100vw - 28px));max-height:min(92dvh,940px);border:1px solid #b7d6ef;border-radius:20px;background:#f3f8fe;box-shadow:0 28px 95px rgba(9,42,79,.32);color:#153d63}
+#psi-sample-edit-workspace .psi-228-dialog-head{padding:23px 28px;background:linear-gradient(115deg,#123d6a 0%,#176da8 65%,#268fcb 100%);border-bottom:3px solid #85c8f1;align-items:flex-start}
+#psi-sample-edit-workspace .psi-228-dialog-head h2{font-size:clamp(21px,2vw,27px);font-weight:800;letter-spacing:-.025em;line-height:1.2}
+#psi-sample-edit-workspace .psi-228-dialog-head small{font-size:10px;letter-spacing:.16em;color:#d8efff}
+#psi-sample-edit-workspace .psi-228-dialog-head p{margin-top:6px;color:#e6f5ff;font-size:13px}
+#psi-sample-edit-workspace .psi-228-dialog-head button{border:1px solid #b5daf3!important;background:#f1f8ff!important;color:#164b78!important;border-radius:10px!important;padding:9px 14px!important;font-weight:750!important;box-shadow:none!important}
+#psi-sample-edit-workspace .psi-228-dialog-head button:hover{background:#dcefff!important}
+#psi-sample-edit-workspace .psi-231-sample-badge{display:inline-flex;margin-top:11px;padding:5px 10px;border-radius:100px;border:1px solid #8fc8ed;color:#ecf8ff;background:#ffffff20;font-size:10px;letter-spacing:.07em;font-weight:750}
+#psi-sample-edit-workspace .psi-228-dialog-content{padding:22px 26px 26px;max-height:calc(92dvh - 154px);overscroll-behavior:contain}
+#psi-sample-edit-workspace .psi-229-note{margin:0 0 16px;background:#e8f3fe!important;border:1px solid #c7e2f7!important;border-left:4px solid #3c9ed9!important;color:#24557c!important;border-radius:10px;padding:12px 15px}
+#psi-sample-edit-workspace .psi-231-form-heading{display:flex;align-items:center;gap:10px;margin-bottom:12px;color:#184d78}
+#psi-sample-edit-workspace .psi-231-section-dot{width:5px;height:34px;border-radius:6px;background:#2795d0;flex-shrink:0}
+#psi-sample-edit-workspace .psi-231-form-heading strong{display:block;font-size:15px}
+#psi-sample-edit-workspace .psi-231-form-heading small{display:block;font-size:12px;color:#5b7995;margin-top:2px}
+#psi-sample-edit-workspace #sample-assignment,#psi-sample-edit-workspace #sample-reception{padding:20px 20px 18px;border:1px solid #d1e5f5;border-radius:14px;background:#fff;box-shadow:0 5px 18px rgba(26,87,140,.05);gap:12px}
+#psi-sample-edit-workspace label{color:#245579;font-weight:700;font-size:12px}
+#psi-sample-edit-workspace input,#psi-sample-edit-workspace select,#psi-sample-edit-workspace textarea{background:#fbfdff!important;border:1px solid #c5daeb!important;border-radius:9px!important;min-height:39px;color:#193e60!important;box-shadow:none!important}
+#psi-sample-edit-workspace input:focus,#psi-sample-edit-workspace select:focus,#psi-sample-edit-workspace textarea:focus{border-color:#268dc9!important;outline:3px solid #d9efff!important;outline-offset:0}
+#psi-sample-edit-workspace .sample-actions{border-top:1px solid #dbeaf5;padding-top:15px;margin-top:4px;display:flex;flex-wrap:wrap;gap:10px}
+#psi-sample-edit-workspace .sample-actions button,#psi-sample-edit-workspace button[type=submit]{background:linear-gradient(110deg,#145a91,#227fb8)!important;border:1px solid #17699f!important;color:#fff!important;border-radius:9px!important;padding:10px 17px!important;font-weight:750!important;box-shadow:0 3px 10px #1b689c22!important}
+#psi-sample-edit-workspace .sample-actions button.secondary{background:#eaf4fc!important;border:1px solid #bad9ef!important;color:#20577e!important;box-shadow:none!important}
+#psi-sample-edit-workspace .sample-actions button:hover,#psi-sample-edit-workspace button[type=submit]:hover{filter:brightness(1.08)}
+#psi-sample-edit-workspace .sample-actions button:disabled{opacity:.55;cursor:not-allowed}
+#psi-sample-edit-workspace .psi-modal-status:not(:empty){margin:14px 0 0;background:#e9f4ff;border-left:4px solid #318fc8;color:#164e7a}
+#psi-sample-edit-workspace .sample-parameters,#psi-sample-edit-workspace fieldset{border-color:#cbdff0!important;background:#f7fbff!important}
+@media(max-width:700px){#psi-sample-edit-workspace .psi-228-dialog-head{padding:17px;gap:10px}#psi-sample-edit-workspace .psi-228-dialog-content{padding:14px;max-height:calc(92dvh - 165px)}#psi-sample-edit-workspace #sample-assignment,#psi-sample-edit-workspace #sample-reception{padding:13px}#psi-sample-edit-workspace .psi-228-dialog-head button{padding:7px 9px!important}}

@@ -1,0 +1,16 @@
+/* PSI NEXTGEN V1.0.227: refinamiento visual no invasivo */
+.sample-section .sample-grid{gap:14px 16px}
+.sample-section .sample-grid label{min-width:0}
+.sample-section input:focus-visible,.sample-section select:focus-visible,.sample-section textarea:focus-visible{outline:3px solid #a7daf4;outline-offset:1px;border-color:#2489c0}
+.sample-section fieldset{border:1px solid #cce1f0;border-radius:12px;padding:16px;background:#f8fcff}
+.sample-section legend{font-weight:750;color:#174c78;padding:0 8px}
+.sample-section .sample-actions{position:relative;padding:14px 0;gap:10px;display:flex;flex-wrap:wrap}
+.sample-section .sample-actions button{min-height:39px;border-radius:9px}
+.sample-section .sample-info{background:#edf7ff;border-left:3px solid #3b9cd2;padding:12px;border-radius:8px}
+.sample-section .workflow-heading{background:linear-gradient(110deg,#edf8ff,#fff);padding:15px 18px;border-radius:12px;border:1px solid #d6e9f5}
+.micro-export-tools,.micro-filters,.micro-quicksearch{background:#f6fbff;border:1px solid #d9e9f5;border-radius:12px;padding:12px}
+.micro-export-tools{display:flex;align-items:end;flex-wrap:wrap;gap:10px}
+.micro-table-pager{flex-wrap:wrap;gap:10px}
+.sample-table tbody tr:hover{background:#f0f8ff}
+.sample-table th{position:sticky;top:0;z-index:1}
+@media(max-width:800px){.sample-section fieldset{padding:10px}.micro-export-tools button{width:100%}}

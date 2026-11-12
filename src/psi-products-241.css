@@ -1,0 +1,25 @@
+/* V1.0.241 · Presentación profesional del catálogo, sin alterar operaciones */
+.product-page .product-panel{border-top:3px solid #2496c6!important;box-shadow:0 8px 28px #143b6220}
+.product-page .product-tabs{display:flex;flex-wrap:wrap;gap:7px}
+.product-page .product-tabs button.active{background:#155b91!important;color:white!important}
+.product-page .product-kpis .card{border-top:3px solid #2598cb!important}
+.product-page .product-table-wrap{overflow:auto;max-width:100%}
+.product-page .product-table thead{background:#eaf4fc;color:#153f67}
+.product-page .product-table tbody tr:hover{background:#f1f8fd}
+.psi-product-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;background:#eff7fd;border:1px solid #cfe5f6;border-radius:12px;padding:14px 16px;margin:16px 0}
+.psi-product-toolbar strong,.psi-product-toolbar small{display:block}.psi-product-toolbar small{color:#54738a;margin-top:4px}
+.psi-product-toolbar button,.psi-product-pager button{background:#17699e;color:#fff;border:0;border-radius:9px;padding:10px 15px;font-weight:700;cursor:pointer}
+.psi-product-pager{display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:12px;padding:14px 2px;color:#31536f;font-size:13px}
+.psi-product-pager .psi-page-summary{margin-right:auto}.psi-product-pager select{border:1px solid #c6dce9;padding:7px;border-radius:8px;background:white}
+.psi-product-pager button:disabled{opacity:.45;cursor:default}
+.psi-history-search{width:min(100%,440px);margin:12px 0;padding:12px;border:1px solid #bcd6e8;border-radius:9px}
+.psi-product-dialog[hidden]{display:none!important}.psi-product-dialog{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:20px}
+.psi-product-shade{position:absolute;inset:0;background:#08213bba;backdrop-filter:blur(2px)}
+.psi-product-window{position:relative;background:white;border-radius:16px;width:min(1120px,98vw);max-height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 70px #081d3980}
+.psi-product-window>header{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(110deg,#123e69,#1683b5);color:white;padding:18px 23px}
+.psi-product-window>header h2{margin:4px 0 0;color:white;font-size:21px}.psi-product-window>header small{color:#c8e9ff;letter-spacing:1px}
+.psi-product-window>header button{background:#ffffff24;border:1px solid #ffffff66;color:white;border-radius:9px;padding:9px 13px;cursor:pointer}
+.psi-product-dialog-body{padding:22px;overflow:auto}.psi-product-dialog-body .product-grid{margin:0}
+.psi-product-dialog-body input:focus,.psi-product-dialog-body select:focus{outline:2px solid #249bcd;outline-offset:1px}
+body.psi-product-modal-open{overflow:hidden}
+@media(max-width:700px){.psi-product-toolbar{align-items:stretch;flex-direction:column}.psi-product-pager{justify-content:center}.psi-product-pager .psi-page-summary{width:100%;text-align:center}.psi-product-dialog{padding:6px}.psi-product-dialog-body{padding:12px}}

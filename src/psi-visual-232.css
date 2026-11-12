@@ -1,0 +1,32 @@
+/* LAB-PSI V1.0.232: identidad azul coherente para expedientes y seguimiento.
+   Solo presentación; no cambia cálculos, permisos, eventos ni escrituras. */
+:root{--psi-dialog-navy:#123c69;--psi-dialog-blue:#207eb8;--psi-dialog-border:#c8e1f4;--psi-dialog-pale:#edf7ff}
+#psi-analysis-workspace.psi-228-dialog,#psi-trace-dialog.psi-trace-dialog{border:1px solid #b7d9f1;border-radius:20px;background:#f3f9ff;color:#153c61;box-shadow:0 30px 95px #0d345a55;overflow:hidden}
+#psi-analysis-workspace .psi-228-dialog-head,#psi-trace-dialog .psi-trace-header{background:linear-gradient(115deg,#123c69,#176fa8 65%,#2996d0)!important;color:#fff!important;border-bottom:3px solid #8dd0f5;padding:21px 26px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+#psi-analysis-workspace .psi-228-dialog-head :is(h2,p,small),#psi-trace-dialog .psi-trace-header :is(h2,p,small){color:#fff!important}
+#psi-analysis-workspace .psi-228-dialog-head small,#psi-trace-dialog .psi-trace-header small{font-size:11px;letter-spacing:.13em;font-weight:800;opacity:.88}
+#psi-analysis-workspace .psi-228-dialog-head h2,#psi-trace-dialog .psi-trace-header h2{font-size:clamp(20px,2vw,27px);font-weight:800;line-height:1.2;margin:4px 0}
+#psi-analysis-workspace .psi-228-dialog-head button,#psi-trace-dialog .psi-trace-close{background:#eef8ff!important;color:#174d79!important;border:1px solid #b9dff6!important;border-radius:10px!important;padding:9px 15px!important;font-weight:750!important;box-shadow:none!important;white-space:nowrap}
+#psi-analysis-workspace .psi-228-dialog-content,#psi-trace-dialog .psi-trace-body{background:#f3f9ff;padding:20px 25px;overscroll-behavior:contain}
+#psi-analysis-workspace .sample-analysis{background:#fff;border:1px solid var(--psi-dialog-border);box-shadow:0 8px 22px #164d7d0c}
+#psi-analysis-workspace .workflow-heading{border-bottom:1px solid #d7e8f5;padding-bottom:12px;margin-bottom:15px}
+#psi-analysis-workspace .workflow-kicker{color:#227fb8!important}
+#psi-analysis-workspace .workflow-badge{background:#eaf5ff!important;color:#165b91!important;border-color:#bedff5!important}
+#psi-analysis-workspace .sample-info,#psi-analysis-workspace .nmp-result,#psi-trace-dialog .psi-trace-note{background:#e9f5ff!important;color:#24567b!important;border-color:#c7e3f6!important;border-left:3px solid #3497d0;border-radius:9px;padding:11px 13px}
+#psi-analysis-workspace .micro-stage,#psi-analysis-workspace .sample-parameters{background:#f7fbff!important;border:1px solid #cfe5f5!important;border-radius:12px}
+#psi-analysis-workspace .micro-stage h3,#psi-analysis-workspace legend{color:#155583!important;font-weight:800}
+#psi-analysis-workspace input,#psi-analysis-workspace select,#psi-analysis-workspace textarea{background:#fff!important;border:1px solid #c6deef!important;border-radius:9px!important;color:#173e61!important}
+#psi-analysis-workspace :is(input,select,textarea):focus{outline:3px solid #d9efff!important;border-color:#2c91c9!important}
+#psi-analysis-workspace .sample-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;border-top:1px solid #d5e8f6;padding:15px 0 0;margin-top:12px}
+#psi-analysis-workspace .sample-actions button{background:linear-gradient(110deg,#155c95,#2488c2)!important;color:#fff!important;border:1px solid #176b9f!important;border-radius:9px!important;padding:10px 16px!important;font-weight:750!important;box-shadow:none!important}
+#psi-analysis-workspace .sample-actions button.secondary{background:#eaf5ff!important;color:#195781!important;border:1px solid #b9daf0!important}
+#psi-analysis-workspace .sample-actions button:disabled{opacity:.48!important;cursor:not-allowed!important}
+#psi-trace-dialog .psi-trace-body h3{color:#164f7d;border-left:4px solid #359bd3;padding-left:10px}
+#psi-trace-dialog .psi-trace-step{border-color:#c7e1f3;color:#255b81}
+#psi-trace-dialog .psi-trace-step.is-done .psi-trace-dot,#psi-trace-dialog .psi-trace-step.is-current .psi-trace-dot{background:#227eb8!important;border-color:#227eb8!important;color:white!important}
+#psi-trace-dialog .psi-trace-history{background:#fff;border:1px solid #d3e6f5;border-radius:12px;padding:16px 20px 16px 37px}
+#psi-trace-dialog .psi-trace-footer{background:#f3f9ff;border-top:1px solid #d3e7f6;padding:14px 25px;display:flex;justify-content:flex-end}
+/* Consistencia de botones en cualquier ventana nativa de edición/rectificación. */
+dialog .sample-actions button:not(.secondary),dialog button[type=submit]:not(.secondary){background:linear-gradient(110deg,#155c95,#2488c2)!important;border-color:#176b9f!important;color:#fff!important}
+dialog .sample-actions button.secondary{background:#eaf5ff!important;border-color:#bbd9ee!important;color:#20577e!important}
+@media(max-width:700px){#psi-analysis-workspace .psi-228-dialog-head,#psi-trace-dialog .psi-trace-header{padding:15px}#psi-analysis-workspace .psi-228-dialog-content,#psi-trace-dialog .psi-trace-body{padding:12px}#psi-analysis-workspace .sample-actions button{flex:1 1 150px}}

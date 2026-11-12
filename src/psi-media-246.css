@@ -1,0 +1,28 @@
+/* Identidad LAB-PSI para Medios de cultivo; semántica de alertas preservada. */
+.media-pro-246{--m246-blue:#17679f;--m246-navy:#153c68;--m246-sky:#eaf5fd;--m246-border:#c9e0f2;color:#203c50}
+.media-pro-246>.eyebrow{color:var(--m246-blue)!important}
+.media-pro-246 h1,.media-pro-246 h2,.media-pro-246 h3{color:var(--m246-navy)}
+.media-pro-246 .product-tabs>button.active,.media-pro-246 button[data-media-tab].active{background:var(--m246-blue)!important;color:white!important;border-color:var(--m246-blue)!important}
+.media-pro-246 button:not(.secondary):not([disabled]):not(.qc-pill):not(.media-state){accent-color:var(--m246-blue)}
+.media-pro-246 .media-card,.media-pro-246 .media-register-card{border-top:3px solid #3296ce}
+.media-pro-246 .product-table thead th{background:#eaf4fb!important;color:#163f6b!important}
+.media-pro-246 .product-table tbody tr:hover{background:#f2f8fd}
+.media-pro-246 .product-grid input:focus,.media-pro-246 .product-grid select:focus,.media-pro-246 input[type=search]:focus{outline:2px solid #8ac8ef;outline-offset:1px}
+.media-pro-246 .media-summary:not(.qc-pro-result){background:#edf6fc!important;border-color:#d3e8f6!important;color:#234b70!important}
+.media-246-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 18px;border:1px solid var(--m246-border);background:var(--m246-sky);border-radius:12px;margin-bottom:18px}
+.media-246-head strong{color:var(--m246-navy);font-size:17px}.media-246-head p{margin:5px 0 0;color:#54728d}
+.media-pro-246 .media-246-primary,.media-pro-246 .media-246-pagination button{background:var(--m246-blue)!important;color:white!important;border:1px solid var(--m246-blue)!important;border-radius:8px;padding:9px 13px;cursor:pointer}
+.media-246-original-intro{display:none!important}
+.media-246-placeholder{display:flex;flex-direction:column;align-items:center;text-align:center;gap:7px;padding:35px 12px;color:#57738d;background:#f8fbfe;border:1px dashed #bdd9ed;border-radius:12px}
+.media-246-placeholder span{font-size:27px}.media-246-placeholder strong{font-size:17px;color:#194e7b}.media-246-placeholder p{margin:0;max-width:590px}
+.media-246-modal[hidden]{display:none!important}.media-246-modal{position:fixed;inset:0;background:rgba(10,32,55,.6);z-index:9999;display:flex;justify-content:center;align-items:center;padding:18px}
+.media-246-dialog{width:min(1120px,100%);max-height:94vh;display:flex;flex-direction:column;background:#fff;border-radius:15px;overflow:hidden;box-shadow:0 24px 80px #0b274a50}
+.media-246-modal-head{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(105deg,#153e6a,#2581b8);padding:16px 22px;color:white}
+.media-246-modal-head small{letter-spacing:.1em;color:#d6efff}.media-246-modal-head h2{color:white!important;margin:3px 0 0}
+.media-246-close{background:#ffffff25!important;color:white!important;border:1px solid #ffffff80!important;border-radius:8px;padding:8px 12px;cursor:pointer}
+.media-246-modal-body{padding:22px;overflow:auto;overscroll-behavior:contain}.media-246-modal-body #media-form{margin:0}
+.media-246-modal-open{overflow:hidden}
+.media-246-pagination{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap;padding:14px 4px;color:#315a7b}
+.media-246-pagination select{padding:8px;border:1px solid #bdd9eb;border-radius:8px;background:white}
+.media-246-pagination button[disabled]{opacity:.45;cursor:not-allowed}
+@media(max-width:750px){.media-246-head{flex-direction:column;align-items:stretch}.media-246-dialog{max-height:98vh}.media-246-modal-body{padding:12px}.media-246-pagination{justify-content:center}}

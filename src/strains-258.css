@@ -1,0 +1,25 @@
+/* V1.0.258 · Expediente documental de reactivación */
+.strain258-open{background:#176ca8!important;color:#fff!important;border:0;border-radius:9px;padding:9px 13px;font-weight:700;white-space:nowrap;cursor:pointer}
+.strain258-help{color:#54718a;margin:8px 0 16px;font-size:.92rem}
+.strain258-lock{overflow:hidden}
+.strain258-overlay{position:fixed;inset:0;background:rgba(8,28,52,.66);z-index:12000;display:flex;justify-content:center;align-items:center;padding:22px}
+.strain258-dialog{width:min(1100px,100%);max-height:94vh;display:flex;flex-direction:column;background:#fff;border-radius:17px;overflow:hidden;box-shadow:0 24px 75px #071a365c;outline:0}
+.strain258-head{background:linear-gradient(110deg,#153e6b,#207eb5);color:white;padding:23px 30px;display:flex;justify-content:space-between;gap:18px;align-items:start}
+.strain258-head small{letter-spacing:.12em;font-size:11px;font-weight:700;color:#d8eaff}
+.strain258-head h2{color:white!important;font-size:26px;margin:7px 0}
+.strain258-head p{color:#edf6ff;margin:0}
+.strain258-close{background:#ffffff20!important;border:1px solid #ffffff88!important;color:#fff!important;border-radius:9px;font-size:22px;min-width:44px;min-height:44px;cursor:pointer}
+.strain258-body{overflow:auto;padding:23px 30px;background:#fff}
+.strain258-banner{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between;background:#eaf4fc;border-left:4px solid #218cc9;padding:15px 17px;border-radius:9px;color:#153f6c;margin-bottom:18px}
+.strain258-banner span{font-size:13px;color:#456782}
+.strain258-section{margin:0 0 17px;border:1px solid #d8e7f3;border-radius:12px;overflow:hidden}
+.strain258-section h3{margin:0;padding:13px 17px;background:#eaf4ff;color:#15446f;font-size:16px;border-bottom:1px solid #d8e7f3}
+.strain258-grid{padding:14px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.strain258-field{min-width:0;border:1px solid #dfebf5;border-radius:8px;padding:11px;background:#f7fbff;overflow-wrap:anywhere}
+.strain258-field small{display:block;color:#5c7994;font-size:12px;margin-bottom:5px}
+.strain258-field strong{font-size:14px;color:#173f64;line-height:1.35;white-space:pre-wrap}
+.strain258-disclaimer{background:#edf5fb;border-radius:9px;padding:13px 16px;color:#456b87;font-size:13px}
+.strain258-footer{border-top:1px solid #dbe8f3;padding:14px 25px;display:flex;justify-content:flex-end}
+.strain258-dismiss{background:#176ca8!important;color:#fff!important;border:0;border-radius:9px;padding:11px 17px;font-weight:700;cursor:pointer}
+@media(max-width:760px){.strain258-overlay{padding:7px}.strain258-head{padding:17px}.strain258-body{padding:13px}.strain258-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.strain258-grid{grid-template-columns:1fr}}

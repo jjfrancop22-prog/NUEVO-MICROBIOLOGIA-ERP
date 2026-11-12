@@ -1,0 +1,23 @@
+/* V1.0.225 · refinement + client-side table controls; no data-layer changes */
+:root{--psi-225-blue:#186b9b;--psi-225-pale:#eaf5fc}
+#page-content>.intro{margin-bottom:10px!important}
+#page-content>.sample-kpis>.card{background:linear-gradient(155deg,#fff 60%,#f0f9ff)!important}
+#page-content .micro-nav-toolbar{border-top:1px solid #e1edf6;padding-top:12px}
+#page-content .micro-workflow-tabs{scrollbar-width:thin;scrollbar-color:#a4cee7 transparent}
+#page-content .micro-workflow-tab:focus-visible,#page-content button:focus-visible{outline:3px solid #69b9e6;outline-offset:2px}
+#page-content .sample-section .workflow-heading,#page-content .sample-section .micro-section-header{padding-bottom:12px;border-bottom:1px solid #e0ebf3;margin-bottom:14px}
+#page-content .sample-table tbody tr:has(button:focus-visible){background:#eaf5ff!important}
+#page-content .sample-row-actions{max-width:260px!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px!important}
+#page-content .sample-row-actions button{white-space:normal;min-width:0!important}
+.psi-general-controls{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:10px 0 12px;padding:12px;border:1px solid #d8e8f4;border-radius:12px;background:#f3f9fe}
+.psi-general-search{flex:1 1 280px;display:flex;align-items:center;gap:8px;color:#277aa8}
+.psi-general-search input{width:100%;min-width:0;background:white;border:1px solid #cbdfea;border-radius:9px;padding:10px 12px;color:#17466a}
+.psi-general-size{display:flex;align-items:center;gap:7px;color:#315d7b;font-size:12px;font-weight:700}
+.psi-general-size select{background:white;border:1px solid #cbdfea;border-radius:8px;padding:8px}
+.psi-general-count{font-size:12px;color:#4c708b}
+.psi-general-pages{display:flex;align-items:center;gap:9px;margin-left:auto;font-size:12px;color:#2c5d7c}
+.psi-general-pages button{padding:6px 12px!important;min-height:30px!important}
+.psi-general-pages button:disabled{opacity:.35}
+.psi-trace-dialog{width:min(780px,calc(100vw - 24px))}
+.psi-trace-step.is-done{color:#137950}.psi-trace-step.is-current{color:#176f9e}
+@media(max-width:720px){.psi-general-controls{padding:9px}.psi-general-pages{margin-left:0}.psi-general-count{width:100%}#page-content .sample-row-actions{grid-template-columns:1fr}}

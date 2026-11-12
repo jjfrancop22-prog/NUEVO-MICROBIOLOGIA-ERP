@@ -1,0 +1,25 @@
+/* PSI NEXTGEN V1.0.224: diseño y trazabilidad de solo lectura */
+:root{--psi-accent:#238bbd;--psi-line:#d8e8f4}
+#page-content>.sample-kpis{margin-bottom:10px!important}
+#page-content>.sample-info{padding:9px 13px!important;margin:8px 0!important}
+#page-content .sample-section{margin-top:15px!important}
+#page-content .sample-table tbody td{padding:9px 10px!important}
+#page-content .sample-row-actions{display:flex!important;flex-wrap:wrap;gap:5px!important;max-width:280px}
+#page-content .sample-row-actions button{font-size:11px!important;line-height:1.25!important;padding:6px 9px!important;min-height:29px!important;background:#f1f8fc!important;border:1px solid #d5e6f0!important;color:#235d81!important}
+#page-content .sample-row-actions button:hover{background:#dceffa!important;border-color:#9ccfe9!important}
+#page-content .sample-row-actions button:disabled{opacity:.48!important;cursor:not-allowed}
+#page-content .micro-duplicate-summary{display:flex;flex-wrap:wrap;gap:10px!important}
+#page-content .micro-duplicate-summary>span{border:1px solid #d5e8f4!important;border-radius:11px!important;background:#f3f9fe!important;padding:11px 14px!important}
+#page-content .micro-duplicate-summary strong{color:#166b9a!important;font-size:21px!important}
+.psi-trace-dialog{border:1px solid #c8deee;border-radius:18px;padding:0;width:min(720px,calc(100vw - 30px));max-height:min(85vh,850px);box-shadow:0 28px 80px #102c4b55;color:#183d5b;background:#fff}
+.psi-trace-dialog::backdrop{background:#102e4b88;backdrop-filter:blur(2px)}
+.psi-trace-header{padding:22px 26px;background:linear-gradient(110deg,#e9f5fc,#fff);border-bottom:1px solid #d9e9f4;display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.psi-trace-header small{font-weight:800;color:#267fae;letter-spacing:.12em}.psi-trace-header h2{margin:5px 0;color:#123a63;font-size:24px}.psi-trace-header p{margin:0;color:#58758a}
+.psi-trace-body{padding:18px 26px;overflow:auto}.psi-trace-body h3{font-size:14px;color:#17476e;margin:12px 0 16px}
+.psi-trace-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:24px}
+.psi-trace-step{display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;color:#8297a7;font-size:12px;font-weight:700;position:relative}
+.psi-trace-dot{height:34px;width:34px;border-radius:50%;display:grid;place-items:center;background:#f1f5f8;border:2px solid #d8e3eb;color:#8397a5;font-size:13px;z-index:1}
+.psi-trace-step.is-done .psi-trace-dot{background:#dff5eb;border-color:#23a56e;color:#127a50}.psi-trace-step.is-current .psi-trace-dot{background:#d9effc;border-color:#248fc2;color:#146b99}
+.psi-trace-history{list-style:none;padding:0;margin:0;border-left:2px solid #d4e8f5;margin-left:8px}.psi-trace-history li{position:relative;padding:0 0 18px 20px;display:flex;flex-wrap:wrap;gap:5px 12px}.psi-trace-history li:before{content:'';position:absolute;left:-6px;top:5px;width:10px;height:10px;border-radius:50%;background:#3299c7}.psi-trace-history strong{color:#1b5177}.psi-trace-history span{color:#58768b}.psi-trace-history small{width:100%;color:#7890a2}
+.psi-trace-note{font-size:12px;color:#688197;background:#eff7fc;padding:10px;border-radius:8px}.psi-trace-footer{padding:13px 26px;border-top:1px solid #e0edf5;text-align:right}
+@media(max-width:620px){.psi-trace-header,.psi-trace-body{padding:16px}.psi-trace-steps{gap:4px}.psi-trace-step{font-size:10px}}

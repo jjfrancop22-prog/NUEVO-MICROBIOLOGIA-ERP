@@ -1,0 +1,37 @@
+/* V1.0.242 · Sistema visual unificado LAB-PSI. Solo apariencia: no modifica evaluaciones ni Firebase. */
+.product-page{--psi-navy:#123b66;--psi-blue:#1769a5;--psi-sky:#2c98cc;--psi-soft:#eef6fc;--psi-border:#cddfed;color:#183650}
+.product-page .eyebrow{color:var(--psi-blue)!important;letter-spacing:.09em;font-weight:800}
+.product-page h1,.product-page h2,.product-page h3{color:var(--psi-navy)!important}
+.product-page .product-panel{border:1px solid var(--psi-border)!important;border-top:3px solid var(--psi-sky)!important;border-radius:14px;background:#fff!important;box-shadow:0 8px 28px #173e6412}
+.product-page .product-kpis{gap:10px}
+.product-page .product-kpis .card{border:1px solid var(--psi-border)!important;border-top:3px solid var(--psi-sky)!important;background:#fff!important;box-shadow:0 4px 16px #153e6410}
+.product-page .product-kpis .card small{color:#47647e!important;font-weight:650}
+.product-page .product-kpis .card h2{color:var(--psi-navy)!important}
+.product-page .product-tabs{gap:8px;margin:17px 0 12px}
+.product-page .product-tabs button{background:#f4f8fc!important;color:var(--psi-navy)!important;border:1px solid var(--psi-border)!important;border-radius:9px!important;font-weight:700!important;transition:background .15s,box-shadow .15s}
+.product-page .product-tabs button:hover{background:#e5f2fc!important;border-color:#83b8db!important}
+.product-page .product-tabs button.active{background:var(--psi-blue)!important;border-color:var(--psi-blue)!important;color:#fff!important;box-shadow:0 3px 10px #1769a52c}
+.product-page .product-notice,.product-page .product-subpanel{background:var(--psi-soft)!important;border:1px solid var(--psi-border)!important;border-left:4px solid var(--psi-sky)!important;color:#214666!important;border-radius:9px;padding:12px 14px}
+.product-page .product-list-head{border-color:var(--psi-border)!important}
+.product-page .product-count{background:#e5f2fc!important;color:var(--psi-blue)!important;border:1px solid #c5e1f5!important}
+.product-page .product-filter input,.product-page .product-filter select,.product-page .product-grid input,.product-page .product-grid select,.product-page .product-grid textarea{border:1px solid #c7d9e6!important;border-radius:9px!important;background:#fff!important;color:#183650!important}
+.product-page input:focus,.product-page select:focus,.product-page textarea:focus{outline:2px solid #52a6d8!important;outline-offset:1px}
+.product-page .product-table-wrap{border:1px solid #dce8f1;border-radius:10px;overflow:auto}
+.product-page .product-table{border-collapse:separate;border-spacing:0;width:100%}
+.product-page .product-table thead th{background:#eaf3fa!important;color:var(--psi-navy)!important;font-weight:800!important;border-bottom:1px solid #cddfed!important;white-space:nowrap}
+.product-page .product-table tbody tr:nth-child(even){background:#f8fbfe!important}
+.product-page .product-table tbody tr:hover{background:#edf6fd!important}
+.product-page .product-table td{border-bottom:1px solid #e4edf4!important}
+.product-page .product-actions button,.product-page button[data-edit-product],.product-page .product-form-actions button:not(.product-secondary),.product-page .product-subpanel button:not(.product-secondary){background:var(--psi-blue)!important;color:white!important;border:1px solid var(--psi-blue)!important;border-radius:8px!important}
+.product-page .product-actions button:hover,.product-page button[data-edit-product]:hover,.product-page .product-form-actions button:not(.product-secondary):hover{background:#0d4d80!important}
+.product-page .product-secondary,.product-page .product-form-actions .product-secondary{background:#f1f7fc!important;color:var(--psi-blue)!important;border:1px solid #b9d5e8!important;border-radius:8px!important}
+.product-page .product-status.ok{background:#e5f2fc!important;color:#155c92!important;border:1px solid #bdddf1!important}
+.product-page .product-status.warn{background:#fff3db!important;color:#805200!important;border:1px solid #f4dba3!important}
+.product-page .product-status.is-open{background:#e6f1fb!important;color:#155c92!important}
+.product-page .product-strain-details{background:#f0f7fd!important;border-color:#bcd9ec!important}
+.psi-product-toolbar{background:#eff7fd!important;border-color:#c8e1f2!important}
+.psi-product-toolbar button,.psi-product-pager button{background:#1769a5!important}
+.psi-product-dialog .psi-product-window>header{background:linear-gradient(110deg,#123b66,#1976b0)!important}
+.psi-product-dialog .psi-product-dialog-body .product-notice{background:#eff7fd!important;border-color:#c8e1f2!important}
+.psi-product-dialog .psi-product-dialog-body button:not(.product-secondary){background:#1769a5!important;color:white!important}
+@media(max-width:750px){.product-page .product-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.product-page .product-tabs button{flex:1 1 140px}}

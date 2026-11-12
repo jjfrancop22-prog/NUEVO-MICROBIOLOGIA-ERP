@@ -1,0 +1,10 @@
+/* Consulta oficial bajo demanda del expediente QC */
+.qc237-panel{border-top:3px solid #3998d0!important}
+.qc237-load{background:#1976b5!important;color:white!important;border:1px solid #176da5!important;border-radius:9px;padding:10px 15px;font-weight:750;cursor:pointer}
+.qc237-load:disabled{opacity:.65;cursor:wait}
+.qc237-details{margin-top:14px;color:#173d5b;line-height:1.5}
+.qc237-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.qc237-fields>div{background:#f0f8ff;border:1px solid #d1e6f5;border-radius:9px;padding:10px;min-width:0;overflow-wrap:anywhere}
+.qc237-fields b,.qc237-fields span{display:block}.qc237-fields b{font-size:12px;color:#3c7197;margin-bottom:5px}.qc237-fields span{font-size:13px}
+.qc237-controls{display:grid;gap:12px;margin-top:15px}.qc237-control{border:1px solid #d2e5f2;background:white;border-radius:11px;padding:14px}.qc237-control h4{color:#125887;margin:0 0 10px}
+@media(max-width:650px){.qc237-fields{grid-template-columns:1fr}}

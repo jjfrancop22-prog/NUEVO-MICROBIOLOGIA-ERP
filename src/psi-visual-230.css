@@ -1,0 +1,9 @@
+/* PSI NEXTGEN 1.0.230 — ventanas de edición y resultados */
+.psi-229-dialog{width:min(1040px,96vw);max-height:94vh;border:1px solid #b8d8ee;border-radius:18px;box-shadow:0 24px 80px #123d6170;padding:0;background:#f5faff;color:#173e60}
+.psi-229-dialog::backdrop{background:rgba(12,39,66,.55);backdrop-filter:blur(3px)}
+.psi-229-dialog .psi-228-dialog-head{background:linear-gradient(110deg,#13558a,#2585be);color:white;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.psi-229-dialog .psi-228-dialog-head h2{color:white;margin:3px 0}.psi-229-dialog .psi-228-dialog-head p,.psi-229-dialog .psi-228-dialog-head small{color:#e0f3ff}
+.psi-229-dialog .psi-228-dialog-content{padding:22px 26px;overflow:auto;max-height:calc(94vh - 125px)}
+.psi-229-dialog .sample-grid{gap:14px}.psi-229-dialog input:focus,.psi-229-dialog select:focus{outline:2px solid #4aa5e2;outline-offset:1px}
+.psi-modal-status:not(:empty){padding:12px;border-radius:10px;background:#e7f3fc;color:#164a76;font-weight:600}
+@media(max-width:650px){.psi-229-dialog .psi-228-dialog-content{padding:14px}.psi-229-dialog .psi-228-dialog-head{padding:14px}}

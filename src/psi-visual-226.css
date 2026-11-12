@@ -1,0 +1,20 @@
+/* PSI NEXTGEN 2027 — fase 1.0.226: presentación, sin cambios en operaciones */
+:root{--psi-226-ink:#143a61;--psi-226-line:#cfe3f2;--psi-226-sky:#eaf5fd}
+.micro-modern-section,.sample-section{border-radius:15px!important;box-shadow:0 8px 25px rgba(24,76,118,.055)}
+.micro-modern-section .micro-section-header{background:linear-gradient(110deg,#f2f9ff,#fff);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.micro-modern-section .sample-kpis .card{background:linear-gradient(160deg,#fff,#f3faff);border:1px solid var(--psi-226-line);border-radius:13px}
+.micro-modern-section .sample-kpis h2{font-variant-numeric:tabular-nums;color:#194e7a}
+.micro-quicksearch{display:flex;align-items:end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:14px 0;padding:14px 16px;background:var(--psi-226-sky);border:1px solid var(--psi-226-line);border-radius:12px}
+.micro-quicksearch label{display:flex;flex:1 1 330px;flex-direction:column;gap:7px;font-size:12px;font-weight:700;color:var(--psi-226-ink)}
+.micro-quicksearch input{width:100%;min-height:40px;border:1px solid #b9d5e8;border-radius:9px;background:#fff;padding:9px 12px;color:#143a61}
+.micro-quicksearch input:focus{outline:2px solid #5aafe0;outline-offset:1px}
+#micro-results-count{font-size:12px;color:#386b8e;font-weight:700}
+.sample-section input:focus-visible,.sample-section select:focus-visible,.sample-section button:focus-visible{outline:2px solid #54a6dc;outline-offset:2px}
+.sample-section fieldset{border-radius:12px;border-color:#cde3f0}
+.sample-section .sample-table-wrap{border:1px solid #d7e8f3;border-radius:12px;overflow:auto}
+.sample-section .sample-table th{background:#e4f2fb;color:#235478;white-space:nowrap}
+.sample-section .sample-table tbody tr:hover{background:#f0f8fe}
+.sample-section .micro-table-pager{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:10px;padding:12px 2px}
+.sample-section .sample-actions{gap:10px}
+.sample-section button{transition:background-color .15s ease,box-shadow .15s ease}
+@media(max-width:760px){.micro-quicksearch{padding:12px}.micro-modern-section .micro-section-header{padding:12px}.sample-section .micro-table-pager{justify-content:center}}

@@ -1,0 +1,17 @@
+/* PSI 2027: consistencia azul en el módulo de control de calidad. */
+.qc235-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:end;padding:16px;margin:14px 0;background:#eef6fd;border:1px solid #c9e2f5;border-radius:13px}
+.qc235-toolbar label{display:grid;gap:5px;font-size:12px;font-weight:700;color:#1b527c;flex:1 1 145px;min-width:125px}
+.qc235-toolbar input,.qc235-toolbar select{width:100%;min-height:38px;background:white;border:1px solid #bcd8eb;border-radius:8px;color:#143d62;padding:7px}
+.qc235-toolbar button{min-height:38px}
+.qc235-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:15px 2px;color:#315d7b;font-size:13px}
+.qc235-footer>div{display:flex;align-items:center;gap:10px}.qc235-page{font-weight:700}.qc235-note{color:#5b7890;font-size:12px}
+.sample-table tbody tr[hidden]{display:none!important}
+.qc234-active .qc234-tabs button.selected,.qc234-active button[type="submit"],.qc234-active .sample-actions button[type="submit"]{background:#167bb8!important;border-color:#167bb8!important;color:#fff!important}
+.qc234-active .qc-detail legend,.qc234-active .qc-conclusion,.qc234-active .qc-help{color:#164d78!important}
+.qc234-active .qc-detail{border-color:#c7e0f1!important}
+.qc234-active .qc-detail select:focus,.qc234-active .qc-detail input:focus{outline-color:#3299d2!important;border-color:#3299d2!important}
+.qc-planner .qc-planner-head h2,.qc-planner .qc234-kpi strong{color:#174d78}
+.qc-planner button:not(:disabled):hover{filter:brightness(1.05)}
+@media(max-width:700px){.qc235-toolbar label{flex-basis:100%}.qc235-footer{align-items:flex-start}}
+/* V1.0.263: errores de movimiento sin cerrar el expediente */
+.psi263-error{grid-column:1/-1;background:#fff1f0;border:1px solid #f1b5b0;border-left:4px solid #cf3c32;color:#8c2620;padding:12px 16px;border-radius:10px;font-weight:650}

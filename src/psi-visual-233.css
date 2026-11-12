@@ -1,0 +1,30 @@
+/* LAB-PSI 1.0.233 — Control de Calidad. Presentación sin cambios en cálculos. */
+body .qc-planner{--qc-blue:#167db8;--qc-ink:#143b61;--qc-line:#cfe4f3;color:var(--qc-ink)}
+body .qc-planner .qc-planner-head{padding:4px 2px 14px;border-bottom:1px solid #dbeaf5}
+body .qc-planner .qc-planner-head h2{color:#153e68;font-size:19px}
+body .qc-planner .qc-planner-grid{gap:16px;margin-top:19px}
+body .qc-planner .qc-planner-card{border:1px solid #cfe3f3!important;border-top:4px solid #318fca!important;border-radius:16px;background:linear-gradient(180deg,#fff,#f8fbff);box-shadow:0 7px 22px rgba(20,75,123,.065);padding:17px}
+body .qc-planner .qc-planner-title>strong{color:#143e68}
+body .qc-planner .qc150-date{background:#edf6fc;border:1px solid #d8eaf7;color:#16446d}
+body .qc-planner .qc150-date strong{color:#0d4b7a}
+body .qc-planner .qc150-stat{background:#eaf4fc;color:#235a80}
+body .qc-planner .qc150-disclosure{border-color:#cfe3f2;background:#f8fbff}
+body .qc-planner .qc150-disclosure>summary{color:#17527c}
+body .qc-planner .qc150-help summary{color:#17527c}
+body .qc-planner button:not(:disabled),body .qc-planner .qc150-action:not(:disabled){background:#197db7!important;color:white!important;border-color:#197db7!important}
+body .qc-planner button:disabled{background:#e9f0f6!important;color:#7894aa!important}
+body .qc-planner .qc150-resource-ok{color:#205f86}
+body .qc-planner .qc150-ok .qc150-pill,body .qc-planner .qc150-info .qc150-pill{background:#e4f2fd;color:#1c608e}
+body .qc-planner .qc-planner-warning{background:#fff8f3;border-color:#f0d7c7}
+.qc233-overlay{position:fixed;inset:0;z-index:99999;background:rgba(9,32,58,.56);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px}
+.qc233-dialog{width:min(860px,100%);max-height:min(86vh,850px);display:flex;flex-direction:column;background:#f7fbff;border:1px solid #c4e1f4;border-radius:18px;overflow:hidden;box-shadow:0 26px 70px rgba(8,34,62,.3)}
+.qc233-header{padding:22px 26px;background:linear-gradient(115deg,#164c80,#238ac5);color:white;display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+.qc233-header small{font-size:11px;letter-spacing:.13em;font-weight:800;color:#dcefff}
+.qc233-header h2{margin:7px 0 5px;font-size:23px;color:white}
+.qc233-header p{margin:0;color:#e4f3ff;font-size:13px}
+.qc233-close{border:1px solid #c9e0ef;border-radius:10px;background:#f7fbff;color:#15517b;padding:10px 14px;cursor:pointer;font-weight:700;white-space:nowrap}
+.qc233-body{padding:24px 27px;overflow:auto;line-height:1.6;color:#224760}
+.qc233-body .qc150-journal{border-color:#dcebf5}
+.qc233-footer{padding:15px 25px;border-top:1px solid #d8e8f4;display:flex;align-items:center;justify-content:space-between;gap:14px;color:#66849a;font-size:12px}
+.qc233-primary{background:#197db7;color:#fff;border-color:#197db7}
+@media(max-width:700px){.qc233-overlay{padding:8px}.qc233-header{padding:16px;flex-wrap:wrap}.qc233-body{padding:16px}.qc233-footer{padding:12px;flex-wrap:wrap}}

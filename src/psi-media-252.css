@@ -1,0 +1,13 @@
+/* V1.0.252: inventario y expedientes — capa de presentación, sin modificar transacciones */
+.media-inventory-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}
+.media-inventory-kpi{background:#f4f9ff!important;border:1px solid #c9e0f5!important;border-top:3px solid #258cc4!important;border-radius:12px!important;text-align:left!important;color:#153e67!important;padding:14px 18px!important;min-height:100px;transition:box-shadow .15s,transform .15s}
+.media-inventory-kpi:hover{box-shadow:0 6px 18px #174e7820;transform:translateY(-1px)}
+.media-inventory-kpi.chosen{background:#e4f2ff!important;border-color:#1673b3!important;box-shadow:inset 0 0 0 1px #1673b3}
+.media-inventory-kpi strong{font-size:30px!important;color:#123e6a!important}
+.media-inventory-kpi small{color:#53738f!important}
+#media-inventory-form{background:#f8fbff;border:1px solid #d0e3f5;border-radius:14px;padding:20px!important}
+#media-inventory-form h3{color:#12436f;border-left:4px solid #2696cd;padding-left:12px}
+#media-inventory-form button[type=submit], [data-inventory-select]{background:#196da7!important;color:white!important;border-color:#196da7!important}
+#media-inventory-form button:disabled,[data-inventory-select]:disabled{opacity:.48!important;cursor:not-allowed!important}
+.release251-field strong{overflow-wrap:anywhere;word-break:normal}
+@media(max-width:780px){.media-inventory-kpis{grid-template-columns:1fr}}

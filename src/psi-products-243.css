@@ -1,0 +1,26 @@
+/* V1.0.243 · Presentación uniforme para recepción, inventario, consumos y disposición. */
+.product-page{--psi-primary:#1769a5;--psi-primary-dark:#123b66;--psi-surface:#f0f7fd;--psi-line:#cbdfee}
+.product-page .product-panel>h2{font-size:1.24rem;letter-spacing:-.02em;margin-bottom:6px}
+.product-page .product-panel>p{color:#526d84;line-height:1.55}
+.product-page .product-panel .product-filter{background:#f5f9fd;border:1px solid #d4e5f1;border-radius:12px;padding:12px;gap:10px}
+.product-page .product-subpanel{background:#f6faff!important;border:1px solid #d0e4f2!important;border-left:4px solid #258bc5!important;border-radius:12px!important}
+.product-page .product-subpanel h3{color:#123b66!important}
+.product-page .product-grid{gap:14px!important}
+.product-page .product-grid label{color:#284a65;font-weight:700}
+.product-page .product-grid label small{font-weight:400;color:#59748a}
+.product-page .product-table thead th{background:#eaf3fb!important}
+.product-page .product-table tbody td{vertical-align:middle}
+.product-page .product-table tbody tr:focus-within{background:#edf6fd}
+.product-page .product-notice{background:#eef6fc!important;color:#204968!important;border-left:4px solid #2995cb!important}
+.product-page .product-tabs button.active{background:#1769a5!important;color:white!important}
+.product-page .product-form-actions button,.product-page .product-panel button[type="submit"]{background:#1769a5!important;border-color:#1769a5!important;color:white!important}
+.product-page .product-form-actions button:disabled,.product-page .product-panel button:disabled{opacity:.55;cursor:not-allowed}
+.product-page .psi-module-toolbar{margin:14px 0 20px}
+.product-page .psi-module-dialog .psi-product-window{width:min(1080px,96vw)}
+.product-page .psi-module-dialog .psi-product-dialog-body{padding:22px 24px}
+.product-page .psi-module-dialog .product-subpanel{background:white!important;border:0!important;padding:0!important}
+.product-page .psi-module-dialog .product-subpanel>h3{display:none}
+.product-page .psi-module-dialog .product-grid{display:grid}
+.product-page .psi-module-dialog .psi-product-window>header{background:linear-gradient(110deg,#123b66,#1769a5)!important}
+.product-page .product-status.ok{background:#e6f2fc!important;color:#1769a5!important}
+@media(max-width:720px){.product-page .psi-module-dialog .psi-product-dialog-body{padding:14px}.product-page .psi-module-dialog .product-grid{grid-template-columns:1fr!important}}

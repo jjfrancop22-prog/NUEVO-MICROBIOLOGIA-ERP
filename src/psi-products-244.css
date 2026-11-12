@@ -1,0 +1,11 @@
+/* V1.0.244 · Panel operativo de inventario y legibilidad institucional. */
+.product-page .psi-inventory-insights{margin:16px 0 20px;padding:16px;border:1px solid #c7def0;border-radius:14px;background:#f3f8fe}
+.product-page .psi-insight-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#153d68;margin-bottom:12px}
+.product-page .psi-insight-heading small{color:#54718a;font-weight:500}
+.product-page .psi-insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.product-page .psi-insight-card{background:white;border:1px solid #d2e4f1;border-left:3px solid #2489c1;border-radius:10px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.product-page .psi-insight-card span{font-size:.85rem;color:#365b79}
+.product-page .psi-insight-card strong{font-size:1.25rem;color:#123b66;font-variant-numeric:tabular-nums}
+.product-page button:focus-visible,.product-page input:focus-visible,.product-page select:focus-visible{outline:3px solid #76bce8;outline-offset:2px}
+@media(max-width:760px){.product-page .psi-insight-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:430px){.product-page .psi-insight-grid{grid-template-columns:1fr}}

@@ -1,0 +1,14 @@
+LAB-PSI MICROBIOLOGÍA NEXTGEN · V1.0.277
+
+Proyecto fuente limpio para GitHub / Netlify.
+
+1. Subir el contenido de esta carpeta a GitHub (package.json en la raíz).
+2. Netlify: Build command npm run build; Publish directory dist.
+3. Para uso local: npm install y npm run dev.
+4. El archivo public/version.json indica la versión publicada.
+5. En producción se consulta version.json cada 5 minutos y al volver a la pestaña.
+   Cuando se detecta una versión superior, se ofrece Actualizar ahora o Más tarde.
+   No se fuerza una recarga durante la edición ni se consulta Firestore para detectar versiones.
+6. El aviso se activa cuando una versión posterior se publica con version.json actualizado.
+
+Nota: el ZIP contiene el código fuente, no la carpeta dist generada. Netlify compila dist automáticamente.

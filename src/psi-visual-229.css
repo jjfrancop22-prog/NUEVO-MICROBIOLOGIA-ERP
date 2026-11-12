@@ -1,0 +1,8 @@
+/* PSI NEXTGEN V1.0.229 · Formularios de expediente */
+.psi-229-dialog{width:min(980px,96vw)}
+.psi-229-dialog-content{background:#f6faff}
+.psi-229-dialog-content form{background:#fff;border:1px solid #d5e6f7;border-radius:16px;padding:22px;box-shadow:0 8px 28px #1d5c9210}
+.psi-229-dialog-content .psi-229-note{padding:11px 14px;background:#e9f4ff;border-left:4px solid #448fce;border-radius:8px;color:#24577f;font-size:13px}
+.psi-229-dialog-content .sample-actions{position:sticky;bottom:-30px;background:#fff;padding:14px 4px;border-top:1px solid #d5e6f7;z-index:2}
+.psi-229-dialog-content input:focus-visible,.psi-229-dialog-content select:focus-visible{outline:2px solid #65a9e9;outline-offset:1px}
+@media(max-width:700px){.psi-229-dialog-content form{padding:12px}.psi-229-dialog-content .sample-actions{bottom:-12px}}

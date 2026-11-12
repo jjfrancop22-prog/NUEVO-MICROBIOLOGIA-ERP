@@ -1,0 +1,74 @@
+/* PSI NEXTGEN 2027 · Capa visual no invasiva inspirada en el lenguaje de tarjetas y etapas de ELISA. */
+:root{--psi-navy:#102d55;--psi-blue:#2473a7;--psi-green:#18a45c;--psi-bg:#f0f5fa;--psi-border:#dce7f0;--psi-text:#193451}
+body{background:var(--psi-bg);color:var(--psi-text)}
+.layout{background:var(--psi-bg)}
+.sidebar{background:linear-gradient(180deg,#102f59,#0d2341)!important;border-right:1px solid #244d79!important;box-shadow:5px 0 22px #0a244114}
+.sidebar .brand{background:#0d2749!important;border-bottom:1px solid #ffffff22!important}
+.sidebar .brand-title,.sidebar .brand-text small,.sidebar .nav-heading,.sidebar .sidebar-footer{color:#e6f0ff!important}
+.sidebar .nav-item{color:#e2edfb!important;border-radius:10px!important;margin:3px 9px!important;transition:background .15s ease,transform .15s ease}
+.sidebar .nav-item:hover{background:#ffffff18!important}
+.sidebar .nav-item.selected{background:#e8f4ff!important;color:#113d6b!important;box-shadow:inset 3px 0 #20a65c!important;font-weight:750}
+.sidebar .nav-item.selected .nav-icon{color:#168252!important}
+.topbar{background:#fff!important;border-bottom:1px solid var(--psi-border)!important;box-shadow:0 3px 15px #173e5b0b!important}
+.top-title strong{color:var(--psi-navy)!important;font-weight:800;letter-spacing:-.025em}
+.top-title small{color:#6e8499!important}
+.content{background:var(--psi-bg)!important}
+.card,.sample-section,.micro-chart,.notify-panel{background:#fff;border:1px solid var(--psi-border)!important;border-top:3px solid #3a94bd!important;border-radius:13px!important;box-shadow:0 5px 20px #123d6010!important}
+.card h2,.card h3,.sample-section h2,.micro-chart h3{color:var(--psi-navy)!important}
+.card h2::before,.sample-section>h2::before{content:'';display:inline-block;width:4px;height:17px;background:#3599c5;border-radius:3px;margin-right:9px;vertical-align:-2px}
+.sample-kpis>.card{border-top:3px solid #2899c4!important}
+.sample-kpis>.card:nth-child(4n+2){border-top-color:#1ca66b!important}
+.sample-kpis>.card:nth-child(4n+3){border-top-color:#e4a11a!important}
+.sample-kpis>.card:nth-child(4n+4){border-top-color:#687bb8!important}
+button:not(.nav-item):not(.icon-btn),.pill{border-radius:9px}
+button:not(.nav-item):not(.icon-btn){transition:filter .15s ease,box-shadow .15s ease}
+button:not(.nav-item):not(.icon-btn):hover{filter:brightness(.96)}
+input,select,textarea{border-radius:9px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid #258bc4;outline-offset:2px}
+.sample-table,.micro-table{border-collapse:separate!important;border-spacing:0!important}
+.sample-table thead th,.micro-table thead th{background:#eaf3fa!important;color:#294969!important;text-transform:uppercase;letter-spacing:.035em;font-size:11px!important}
+.sample-table tbody tr:nth-child(even),.micro-table tbody tr:nth-child(even){background:#f9fbfe}
+.sample-table tbody tr:hover,.micro-table tbody tr:hover{background:#eef7fc!important}
+.sample-info,.micro-filters,.micro-export-tools{background:#edf6fc!important;border-color:#cfe4f3!important}
+.sample-status{border:1px solid #eedca4}
+#sync-indicator{background:#eaf7ef!important;color:#197446!important;border:1px solid #c5e7d2!important}
+.login-wrap{background:linear-gradient(145deg,#102f59,#eaf4fb)!important}
+.login{border-top:5px solid #1caa67!important;max-width:460px}
+.login h1{color:#102d55!important}
+/* Respeta los breakpoints, densidades y mecanismos de navegación existentes. */
+@media(max-width:760px){.topbar{padding-inline:10px!important}.content{padding:14px!important}.card,.sample-section{border-radius:11px!important}}
+@media(prefers-reduced-motion:reduce){.sidebar .nav-item,button{transition:none!important}}
+
+/* Fase 2: identidad visual transversal; sin modificar eventos, consultas ni formularios. */
+:root{--psi-surface:#fff;--psi-muted:#60758d;--psi-accent:#258ab7}
+.psi-page-context{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 22px;padding:12px 17px;border:1px solid #dce7f0;background:#fff;border-radius:11px;box-shadow:0 3px 14px #163d5909}
+.psi-breadcrumb{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:11px;letter-spacing:.045em;color:#71849b;font-weight:650}
+.psi-breadcrumb strong{color:#173b61;font-size:12px;letter-spacing:0}
+.psi-separator{color:#b6c9d7}.psi-context-badge{font-size:10px;letter-spacing:.045em;font-weight:750;color:#17834c;background:#eaf8ef;border:1px solid #ccebd9;border-radius:30px;padding:7px 11px;white-space:nowrap}
+#page-content>.eyebrow,#page-content .comm-page-heading .eyebrow{color:#257fa8!important;font-weight:850;letter-spacing:.12em}
+#page-content>h1,#page-content .comm-page-heading h1{color:#112e52!important;font-size:clamp(25px,2.3vw,34px);letter-spacing:-.035em}
+#page-content>.intro{color:#637b90!important;max-width:900px}
+#page-content .card{overflow-wrap:anywhere}
+#page-content .card small{letter-spacing:.02em}
+#page-content .card h2{letter-spacing:-.02em}
+#page-content .card button,#page-content .sample-section button{font-weight:700}
+#page-content .sample-section,#page-content .card{transition:box-shadow .16s ease}
+#page-content .sample-section:focus-within,#page-content .card:focus-within{box-shadow:0 7px 26px #173d6020!important}
+#page-content input:not([type=checkbox]):not([type=radio]),#page-content select,#page-content textarea{accent-color:#247ea9}
+#page-content input:focus,#page-content select:focus,#page-content textarea:focus{border-color:#3c9dca!important;box-shadow:0 0 0 3px #3c9dca18!important}
+#page-content table{font-variant-numeric:tabular-nums}
+#page-content table tbody td{border-bottom-color:#e9eff5!important}
+#page-content .sample-table-wrap{border:1px solid #e0eaf2;border-radius:11px}
+#page-content .sample-table thead th{background:#eaf3fa!important;color:#24496c!important}
+#page-content .sample-table tbody tr:hover{background:#eff8fd!important}
+#page-content .sample-kpis>.card h2{font-variant-numeric:tabular-nums}
+#page-content .monitor-card{border-top-color:#19a66b!important}
+#page-content .notice{border-top-color:#e0a52a!important}
+.topbar .icon-btn{background:#eef5fb!important;color:#1c5e8c!important;border:1px solid #dae9f4!important}
+.topbar .search-box{background:#f6fafe!important;border-color:#dbe8f3!important}
+.topbar .avatar{background:#e0eef9!important;color:#1a5b8d!important}
+.topbar .logout{background:#eaf2f9!important;color:#1b527a!important}
+.sidebar .nav-scroll{scrollbar-color:#51769b transparent;scrollbar-width:thin}
+.sidebar .brand-logo{background:#1e648d!important}
+@media(max-width:760px){.psi-page-context{padding:10px 12px;margin-bottom:15px}.psi-context-badge{display:none}.psi-breadcrumb{font-size:10px;gap:7px}}
+@media(prefers-reduced-motion:reduce){#page-content .sample-section,#page-content .card{transition:none}}

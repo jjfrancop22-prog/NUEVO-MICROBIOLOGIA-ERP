@@ -1,0 +1,38 @@
+/* V1.0.223 — refinement layer. Presentation only: no Firebase reads/writes or event handlers. */
+:root{--psi-surface:#fff;--psi-ink:#173b60;--psi-sky:#eaf5fd;--psi-line:#d5e7f3;--psi-accent:#278fc3}
+body,.layout,.content{background:#f2f7fc!important}
+.content{padding-top:18px!important}
+.psi-page-context{border-radius:12px!important;box-shadow:0 2px 12px rgba(25,77,115,.035)!important;margin-bottom:12px!important}
+#page-content>.eyebrow{letter-spacing:.12em!important}
+#page-content>h1{letter-spacing:-.035em!important;line-height:1.15!important}
+#page-content>.intro{color:#607b92!important}
+#page-content>.sample-kpis{gap:12px!important}
+#page-content>.sample-kpis>.card{border:1px solid var(--psi-line)!important;border-top:3px solid #3297c8!important;border-radius:13px!important;box-shadow:0 6px 18px rgba(32,83,120,.045)!important;transition:box-shadow .18s ease,transform .18s ease}
+#page-content>.sample-kpis>.card:hover{box-shadow:0 9px 24px rgba(32,83,120,.09)!important;transform:translateY(-1px)}
+#page-content>.sample-kpis>.card h2{font-variant-numeric:tabular-nums;font-size:29px!important}
+.micro-nav-toolbar{margin-top:12px!important}
+.micro-workflow-tabs{gap:7px!important;padding-bottom:9px!important}
+.micro-workflow-tab{border-radius:10px!important;min-height:44px!important;min-width:145px!important;box-shadow:0 1px 3px rgba(25,70,100,.035)!important;transition:background .15s ease,border-color .15s ease!important}
+.micro-workflow-tab:hover{border-color:#86c3e4!important;background:#f3faff!important}
+.micro-workflow-tab.is-active,.micro-workflow-tab[aria-pressed="true"]{background:#166a9b!important;color:#fff!important;border-color:#166a9b!important;box-shadow:0 4px 12px rgba(21,106,155,.15)!important}
+.micro-workflow-tab.is-active strong,.micro-workflow-tab[aria-pressed="true"] strong{background:#d7ecf9!important;color:#15577c!important}
+#page-content .sample-section{border:1px solid var(--psi-line)!important;border-top:3px solid #3a9ccc!important;border-radius:14px!important;box-shadow:0 7px 24px rgba(29,78,116,.05)!important;margin-top:18px!important}
+#page-content .sample-section h2{color:#183e65!important;letter-spacing:-.02em}
+.reception-group-title{background:linear-gradient(90deg,#e5f3fc,#f4f9fd)!important;padding:10px 13px!important}
+#page-content .sample-grid input:not([type=checkbox]):not([type=radio]),#page-content .sample-grid select,#page-content .sample-grid textarea{border:1px solid #cddfea!important;border-radius:9px!important;min-height:39px;transition:border-color .15s ease,box-shadow .15s ease}
+#page-content .sample-grid input:focus-visible,#page-content .sample-grid select:focus-visible,#page-content .sample-grid textarea:focus-visible{border-color:#2f97c9!important;outline:2px solid rgba(47,151,201,.2)!important;outline-offset:0!important}
+#page-content .sample-actions{gap:9px!important}
+#page-content .sample-actions button:not(.secondary){background:#1c7fb1!important;border-color:#1c7fb1!important;border-radius:9px!important;min-height:38px!important;font-weight:700!important}
+#page-content .sample-actions button.secondary{background:#edf5fb!important;color:#1b628d!important;border:1px solid #cce3f2!important}
+#page-content .sample-table-wrap{border:1px solid #d9e8f2!important;border-radius:11px!important;overflow:auto!important}
+#page-content .sample-table{border-collapse:separate!important;border-spacing:0!important}
+#page-content .sample-table thead th{position:sticky;top:0;z-index:1;background:#e4f1fa!important;color:#285a79!important;font-size:11px!important;letter-spacing:.045em!important;white-space:nowrap}
+#page-content .sample-table tbody td{border-bottom:1px solid #e5eef5!important;vertical-align:middle!important}
+#page-content .sample-table tbody tr:nth-child(even){background:#f9fcff!important}
+#page-content .sample-table tbody tr:hover{background:#eaf5fd!important}
+#page-content .sample-table button{border-radius:8px!important}
+#page-content .sample-status{border-radius:999px!important;font-weight:700!important}
+#page-content .sample-info{line-height:1.45!important}
+@media(max-width:1100px){.micro-workflow-tab{min-width:140px!important}#page-content>.sample-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:680px){#page-content>.sample-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}.micro-nav-toolbar{gap:8px!important}#page-content .sample-section{padding:13px!important}#page-content>.sample-kpis>.card h2{font-size:24px!important}}
+@media(prefers-reduced-motion:reduce){#page-content>.sample-kpis>.card,.micro-workflow-tab{transition:none!important}#page-content>.sample-kpis>.card:hover{transform:none}}
