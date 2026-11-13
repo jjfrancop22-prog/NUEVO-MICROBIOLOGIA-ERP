@@ -4,7 +4,7 @@ import { sync } from './sync';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let unsubscribe=null,currentUid=null,messages=[],status='connecting',handlers=new Set(),sent=[],sentLoadedFor=null;
 const emit=()=>handlers.forEach(fn=>{try{fn({messages,status,unread:messages.filter(m=>!m.readAt).length});}catch(e){console.error(e);}});
-export function startInbox(uid){if(currentUid===uid)return;stopInbox();currentUid=uid;unsubscribe=sync.subscribe(`communications:inbox:${uid}`,database=>query(collection(database,'communications'),where('recipientUid','==',uid),limit(60)),({data,state,error})=>{messages=[...data].sort((a,b)=>(b.createdAt?.seconds??0)-(a.createdAt?.seconds??0));status=error?'error':state;emit();},{cache:false});}
+export function startInbox(uid){if(currentUid===uid&&unsubscribe)return;stopInbox();currentUid=uid;unsubscribe=sync.subscribe(`communications:inbox:${uid}`,database=>query(collection(database,'communications'),where('recipientUid','==',uid),limit(60)),({data,state,error})=>{messages=[...data].sort((a,b)=>(b.createdAt?.seconds??0)-(a.createdAt?.seconds??0));status=error?'error':state;emit();},{cache:false});}
 export function stopInbox(){unsubscribe?.();unsubscribe=null;currentUid=null;messages=[];sent=[];sentLoadedFor=null;status='connecting';emit();}
 export function watchInbox(fn){handlers.add(fn);fn({messages,status,unread:messages.filter(m=>!m.readAt).length});return()=>handlers.delete(fn);}
 export async function getRecipients(){const snap=await getDocs(query(collection(db,'users'),limit(60)));return snap.docs.filter(d=>d.data().active===true).map(d=>({uid:d.id,label:d.data().name||d.data().userCode||d.id,code:d.data().userCode||'',role:d.data().role}));}

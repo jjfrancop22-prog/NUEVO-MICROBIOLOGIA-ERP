@@ -1,4 +1,3 @@
-import { enhanceQcArchive } from './qc-archive-239.js';
 import { enhanceQcAnalytics } from './qc-analytics-238.js';
 import { enhanceQcExpediente } from './qc-expediente-236.js';
 import { enhanceQcExpediente237 } from './qc-expediente-237.js';
@@ -12,8 +11,8 @@ let dailyControls=[];let unsubDaily=null;
 // V1.0.255: ventana viva pequeña + historial paginado bajo demanda.
 const SAMPLE_PAGE_SIZE=10;
 const SAMPLE_HISTORY_BATCH=100;
-const APP_VERSION="1.0.254";
-const METRIC_CACHE_KEY='microSamples_globalMetrics_v215';
+const APP_VERSION="1.0.286";
+const METRIC_CACHE_KEY='microSamples_globalMetrics_v282';
 // El resumen remoto no está provisionado ni autorizado en las reglas actuales.
 // No abrir listeners a documentos inaccesibles: evita permission-denied y lecturas fallidas.
 const SUMMARY_PATH=null;
@@ -47,6 +46,7 @@ let recentSnapshotReady=false;
 let historyError="";
 let historyAutoStarted=false;
 let sampleTotal=null,sampleListenerToken=0;
+let metricsRefreshing=false;
 let metricError="";
 let recentSamples=[],historicalSamples=[],pendingSamples=[],historicalCursor=null;
 let historyLoading=false,historyExhausted=false,unsubPending=null;
@@ -60,8 +60,10 @@ function refreshSampleCount(el,user,profile,{immediate=false}={}){
    ['total',collection(db,'microSamples')],
    ['finished',query(collection(db,'microSamples'),where('status','==','FINISHED'))]
   ];
+  metricsRefreshing=true;
   const results=await Promise.allSettled(tasks.map(([,ref])=>getCountFromServer(ref)));
   if(token!==sampleListenerToken||seq!==countRefreshSeq)return;
+  metricsRefreshing=false;
   const errors=[];
   results.forEach((result,i)=>{
    const name=tasks[i][0];
@@ -78,6 +80,7 @@ function refreshSampleCount(el,user,profile,{immediate=false}={}){
   // por desigualdad sobre parentId que puede requerir índice o excluir documentos.
   resolveMetricsFromCompleteHistory();
   metricError=errors.length && (sampleTotal===null || globalMetrics.finished===null)?'Conteo remoto pendiente: '+errors.join(', ')+'.':'';
+  saveMetricCache();
   if(el.isConnected)display(el,user,profile);
  },immediate?0:1200);
 }
@@ -202,17 +205,25 @@ const qcDueForDate=(q,date)=>{const prior=dailyControls.flatMap(x=>{const c=x.co
 // Los registros por parámetro se conservan separados para respetar el modelo microDailyQuality.
 const q3Jornadas=()=>dailyRows().filter(r=>r.executedCodes.size>0).map(r=>{
  const control=dailyControls.find(c=>c.id===r.id)?.controls?.Q3;
- return {...r,q3Status:control?.status||'PENDIENTE'};
+ return {...r,q3Status:control?.status||'SIN_EVALUACION',q3HasDocument:!!control};
 }).sort((a,b)=>a.date.localeCompare(b.date)||a.parameter.localeCompare(b.parameter));
-const q3Pendientes=()=>q3Jornadas().filter(r=>!['CONFORME','NO_CONFORME','NO_APLICA'].includes(r.q3Status));
+// V1.0.279: identificar medios por parámetros REALMENTE ejecutados en una fecha.
+const qcMediaForDate=date=>{
+ const parameters=new Set(dailyRows().filter(r=>r.date===date&&r.executedCodes.size).map(r=>r.parameter));
+ const a1=parameters.has('Coliformes fecales');
+ const lmx=parameters.has('Coliformes totales')||parameters.has('E. coli');
+ return {a1,lmx,count:Number(a1)+Number(lmx),label:a1&&lmx?'Ambos medios':a1?'A-1 Medium':lmx?'Fluorocult LMX':'',parameters:[...parameters]};
+};
+const q3Pendientes=()=>q3Jornadas().filter(r=>r.q3HasDocument && ['PENDIENTE','PENDIENTE_EVALUACION'].includes(r.q3Status));
+const q3SinEvaluacion=()=>q3Jornadas().filter(r=>r.q3Status==='SIN_EVALUACION');
 const q3Planificadas=()=>dailyRows().filter(r=>r.plannedCodes.size>0&&!r.executedCodes.size).sort((a,b)=>a.date.localeCompare(b.date));
 const plannerSection=()=>{
  const today=plannerDay();
  const config=[['Q1','Control positivo / negativo',2,'🧪'],['Q3','Esterilidad de medios',1,'🧫'],['Q2','Muestra fortificada · NMP',15,'🔬']];
  const cards=config.map(([q,title,interval,icon])=>{
-  const last=plannerLast(q), pending=q==='Q3'?q3Pendientes():[], planned=q==='Q3'?q3Planificadas():[];
+  const last=plannerLast(q), pending=q==='Q3'?q3Pendientes():[], unreviewed=q==='Q3'?q3SinEvaluacion():[], planned=q==='Q3'?q3Planificadas():[];
   const q2=q==='Q2'?q2Schedule(today):null;
-  const base=q==='Q3'?(pending[0]?.date||planned[0]?.date||today):q2?q2.target:(last?(q==='Q1'?plannerNextQ1(last.date):plannerAddDays(last.date,interval)):today);
+  const base=q==='Q3'?(pending[0]?.date||unreviewed.filter(r=>r.date>=plannerAddDays(today,-30))[0]?.date||planned[0]?.date||today):q2?q2.target:(last?(q==='Q1'?plannerNextQ1(last.date):plannerAddDays(last.date,interval)):today);
   const plan=q==='Q1'?q1Plan(base):null, q1Candidate=q==='Q1'?q1ExecutedCandidate(base,today,last?.date||''):null, next=q==='Q1'?q1SuggestedDate(base):(plan?.date||base);
   // V1.0.255: sugerencia visual Q2 sin desplazar la fecha objetivo ni alterar ciclos.
   const q2Suggested=q2?(q2.weekend?plannerAddDays(q2.target,new Date(q2.target+'T12:00:00Z').getUTCDay()===6?2:1):q2.target):null;
@@ -223,14 +234,19 @@ const plannerSection=()=>{
   for(const r of resources){if(!r.lots.length)warnings.push({text:r.name+': falta lote liberado y vigente',page:'media'});if(q!=='Q3'&&!r.valid.length)warnings.push({text:r.name+': falta reactivación APTA · ATCC '+r.atcc,page:'strains',atcc:r.atcc});}
   const ready=plannerLoaded&&!warnings.length;
   const matching=dailyRows().filter(r=>r.date>=(q2?q2.windowStart:base)&&r.date<=today&&(q2?r.date<=q2.windowEnd:true)&&r.executedCodes.size>0&&(q!=='Q1'||q1EligibleRow(r)));
-  const hasExecution=q==='Q3'?pending.length>0:q==='Q1'?!!q1Candidate:matching.length>0;
+  const hasExecution=q==='Q3'?(pending.length>0||unreviewed.some(r=>r.date===base)):q==='Q1'?!!q1Candidate:matching.length>0;
   const eligible=q!=='Q1'||hasExecution;
-  const status=q==='Q3'?(pending.length?'PENDIENTE':planned.length?'PREVISTO':'AL DÍA'):q==='Q2'&&today>q2.windowEnd&&!hasExecution?'ATRASADO':q==='Q1'&&!eligible?'SIN MUESTRA':!due?'PROGRAMADO':!hasExecution?'SIN EJECUCIÓN':!plannerLoaded?'VERIFICANDO':ready?'LISTO':'REVISAR RECURSOS';
+  const status=q==='Q3'?(pending.length?'PENDIENTE DOCUMENTADO':unreviewed.length?'REVISAR JORNADAS':planned.length?'PREVISTO':'AL DÍA'):q==='Q2'&&today>q2.windowEnd&&!hasExecution?'ATRASADO':q==='Q1'&&!eligible?'SIN MUESTRA':!due?'PROGRAMADO':!hasExecution?'SIN EJECUCIÓN':!plannerLoaded?'VERIFICANDO':ready?'LISTO':'REVISAR RECURSOS';
   const tone=status==='AL DÍA'||status==='LISTO'?'ok':status==='PROGRAMADO'||status==='PREVISTO'?'info':status==='ATRASADO'||status==='SIN EJECUCIÓN'?'late':status==='REVISAR RECURSOS'?'blocked':'warn';
-  const label=q==='Q3'?(pending.length?'Jornada real más antigua':'Próxima jornada prevista'):q==='Q2'?'Fecha objetivo fija':'Próximo control';
-  const details=q==='Q3'?`<div class="qc150-detail"><strong>Jornadas ejecutadas pendientes</strong>${pending.length?`<div class="qc150-journals">${pending.map(r=>`<div class="qc150-journal"><span>${esc(qcDisplayDate(r.date))} · ${esc(r.parameter)}</span><span class="qc150-mini">Pendiente</span></div>`).join('')}</div>`:'<p class="qc150-muted">Sin jornadas reales pendientes.</p>'}${planned.length?`<p class="qc150-muted">${planned.length} jornada(s) previstas sin ejecución confirmada.</p>`:''}</div>`:q==='Q2'?`<div class="qc150-detail"><strong>Calendario de Q2</strong><p>Objetivo: ${esc(qcDisplayDate(q2.target))} (${esc(qcDayLabel(q2.target))}).</p>${q2.weekend?`<p>Ventana excepcional: ${esc(qcDisplayDate(q2.windowStart))} – ${esc(qcDisplayDate(q2.windowEnd))}. Días hábiles: jueves, viernes, lunes y martes.</p>`:'<p>Sin ajuste por fin de semana.</p>'}<p class="qc150-muted">El ciclo siguiente siempre parte de la fecha objetivo, no de la ejecución.</p></div>`:`<div class="qc150-detail"><strong>Programación Q1</strong><p>Fase: ${esc(phase)}. Frecuencia de 2 días calendario; martes a jueves con análisis, viernes solo si existe análisis ejecutado. Lunes y fines de semana no programables.</p>${plan.hasPlanned?`<p>${plan.plannedCount} muestra(s) previstas para ${esc(qcDisplayDate(next))}.</p>`:'<p>No hay muestra prevista en una jornada habilitada.</p>'}${q1Candidate?`<p>🟢 Jornada ejecutada propuesta: ${esc(qcDisplayDate(q1Candidate.date))} (${q1Candidate.executedCodes.size} muestra(s)). Ventana ±2 días respecto a ${esc(qcDisplayDate(base))}.</p>`:`<p>Ventana de ejecución: ${esc(qcDisplayDate(plannerAddDays(base,-2)))} – ${esc(qcDisplayDate(plannerAddDays(base,2)))}. Sin jornada ejecutada elegible.</p>`}</div>`;
+  const label=q==='Q3'?(pending.length?'Pendiente documentado':unreviewed.length?'Próxima jornada / revisión':'Próxima jornada prevista'):q==='Q2'?'Fecha objetivo fija':'Próximo control';
+  const details=q==='Q3'?`<div class="qc150-detail"><strong>Jornadas ejecutadas pendientes</strong>${pending.length?`<div class="qc150-journals">${pending.map(r=>`<button type="button" class="qc150-journal qc279-journal-button" data-qc-q3-date="${esc(r.date)}" data-qc-q3-id="${esc(r.id)}"><span>${esc(qcDisplayDate(r.date))} · ${esc(r.parameter)} · ${esc(qcMediaForDate(r.date).label||'Sin medio identificado')}</span><span class="qc150-mini">Abrir Q3 ↗</span></button>`).join('')}</div>`:'<p class="qc150-muted">Sin jornadas reales pendientes.</p>'}${unreviewed.length?`<p class="qc150-muted"><strong>${unreviewed.length} jornadas ejecutadas sin evaluación Q3:</strong> no se consideran pendientes confirmados hasta verificar el expediente.</p><div class="qc150-journals">${unreviewed.map(r=>`<button type="button" class="qc150-journal qc279-journal-button" data-qc-q3-date="${esc(r.date)}" data-qc-q3-id="${esc(r.id)}"><span>${esc(qcDisplayDate(r.date))} · ${esc(r.parameter)} · Sin evaluación documentada</span><span class="qc150-mini">Revisar ↗</span></button>`).join('')}</div>`:''}${planned.length?`<p class="qc150-muted">${planned.length} jornada(s) previstas sin ejecución confirmada.</p>`:''}</div>`:q==='Q2'?`<div class="qc150-detail"><strong>Calendario de Q2</strong><p>Objetivo: ${esc(qcDisplayDate(q2.target))} (${esc(qcDayLabel(q2.target))}).</p>${q2.weekend?`<p>Ventana excepcional: ${esc(qcDisplayDate(q2.windowStart))} – ${esc(qcDisplayDate(q2.windowEnd))}. Días hábiles: jueves, viernes, lunes y martes.</p>`:'<p>Sin ajuste por fin de semana.</p>'}<p class="qc150-muted">El ciclo siguiente siempre parte de la fecha objetivo, no de la ejecución.</p></div>`:`<div class="qc150-detail"><strong>Programación Q1</strong><p>Fase: ${esc(phase)}. Frecuencia de 2 días calendario; martes a jueves con análisis, viernes solo si existe análisis ejecutado. Lunes y fines de semana no programables.</p>${plan.hasPlanned?`<p>${plan.plannedCount} muestra(s) previstas para ${esc(qcDisplayDate(next))}.</p>`:'<p>No hay muestra prevista en una jornada habilitada.</p>'}${q1Candidate?`<p>🟢 Jornada ejecutada propuesta: ${esc(qcDisplayDate(q1Candidate.date))} (${q1Candidate.executedCodes.size} muestra(s)). Ventana ±2 días respecto a ${esc(qcDisplayDate(base))}.</p>`:`<p>Ventana de ejecución: ${esc(qcDisplayDate(plannerAddDays(base,-2)))} – ${esc(qcDisplayDate(plannerAddDays(base,2)))}. Sin jornada ejecutada elegible.</p>`}</div>`;
   const strainNames={'29212':'Enterococcus faecalis','14028':'Salmonella Typhimurium','11775':'Escherichia coli','13883':'Klebsiella pneumoniae'};const warningDetail=warnings.length?`<details class="qc150-disclosure"><summary>⚠ Ver recursos faltantes <b>${warnings.length}</b></summary><div class="qc150-warnings">${warnings.map(w=>`<div class="qc-planner-warning"><span>${esc(w.page==='strains'?w.text.replace('ATCC '+w.atcc,(strainNames[String(w.atcc)]||'Cepa de referencia')+' · ATCC '+w.atcc):w.text)}</span><button type="button" class="secondary" data-qc-go="${w.page}" data-qc-atcc="${esc(w.atcc||'')}">${w.page==='media'?'Ir a medios':'Reactivar cepa →'}</button></div>`).join('')}</div></details>`:plannerLoaded?'<span class="qc150-resource-ok">✓ Recursos verificados</span>':'<span class="qc150-muted">Consultando recursos…</span>';
-  return `<article class="qc-planner-card qc150-card qc150-${tone}"><div class="qc-planner-title"><strong>${icon} ${q} · ${esc(title)}</strong><span class="qc-planner-pill qc150-pill">${esc(status)}</span></div><div class="qc-planner-date qc150-date"><small>${label}</small><strong>${esc(qcDisplayDate(next))}</strong><small>${q==='Q3'?`${pending.length} pendiente(s) · ${planned.length} prevista(s)`:last?'Último control: '+esc(qcDisplayDate(last.date)):'Sin control anterior documentado'}</small></div><div class="qc150-summary">${q==='Q3'?`<span class="qc150-stat"><b>${pending.length}</b> jornadas pendientes</span><span class="qc150-stat"><b>${planned.length}</b> previstas</span>`:q==='Q2'?`<span class="qc150-stat">${q2.weekend?'🟡 Ajuste por fin de semana':'📅 Fecha ordinaria'}</span>${`<span class="qc150-stat">🟢 Ejecución sugerida: ${esc(qcDisplayDate(q2Suggested))}</span>`+(q2.weekend?`<span class="qc150-stat">${esc(qcDisplayDate(q2.windowStart))} – ${esc(qcDisplayDate(q2.windowEnd))}</span>`:'')}`:`<span class="qc150-stat">${esc(phase)}</span><span class="qc150-stat">${q1Candidate?'🟢 Ejecución sugerida: '+qcDisplayDate(q1Candidate.date):plan.hasPlanned?plan.plannedCount+' muestra(s) previstas':'Sin muestra prevista'}</span>`}</div><details class="qc150-disclosure"><summary>Ver ${q==='Q3'?'jornadas':'programación'} <span aria-hidden="true">⌄</span></summary>${details}</details><div class="qc150-bottom">${warningDetail}<button type="button" class="secondary qc150-action" data-qc-evaluate="${q}" data-qc-base="${base}" data-qc-candidate="${q1Candidate?.id||''}" ${!ready||!hasExecution||!eligible?'disabled':''}>${q==='Q3'?'Evaluar Q3':'Registrar '+q}</button></div></article>`;
+  const lastDate=last?.date?qcDisplayDate(last.date):'Sin evaluación concluida';
+  const nextDate=q==='Q3'&&!pending.length&&unreviewed.length?'Por determinar':qcDisplayDate(next);
+  const resourceText=!plannerLoaded?'Verificando disponibilidad':warnings.length?`${warnings.length} requisito(s) por resolver`:'Recursos verificados';
+  const actionText=q==='Q3'&&unreviewed.length&&!pending.length?'Revisar jornadas sin evaluación':status==='LISTO'?'Registrar evaluación':status==='PROGRAMADO'||status==='PREVISTO'?'Esperar ejecución':'Revisar programación y recursos';
+  const historicalAlert=q==='Q3'&&unreviewed.some(r=>r.date==='2026-04-21')?'<div class="qc287-audit">21/04/2026: existe una jornada ejecutada sin evaluación Q3 reconocida en los datos cargados. Revisar su expediente antes de clasificarla como pendiente.</div>':'';
+  return `<article class="qc-planner-card qc150-card qc150-${tone}"><div class="qc-planner-title"><strong>${icon} ${q} · ${esc(title)}</strong><span class="qc-planner-pill qc150-pill">${esc(status)}</span></div><div class="qc287-timeline"><div><small>Última evaluación concluida</small><strong>${esc(lastDate)}</strong></div><div><small>${label}</small><strong>${esc(nextDate)}</strong></div></div><div class="qc287-resource"><span>Recursos</span><b>${esc(resourceText)}</b></div><div class="qc287-actionhint"><span>Acción requerida</span><strong>${esc(actionText)}</strong></div>${historicalAlert}<div class="qc-planner-date qc150-date qc287-legacy-date"><small>${label}</small><strong>${esc(qcDisplayDate(next))}</strong><small>${q==='Q3'?`${pending.length} pendiente(s) explícitos · ${unreviewed.length} sin evaluación · ${planned.length} prevista(s)`:last?'Último control: '+esc(qcDisplayDate(last.date)):'Sin control anterior documentado'}</small></div><div class="qc150-summary">${q==='Q3'?`<span class="qc150-stat"><b>${pending.length}</b> pendientes documentados</span><span class="qc150-stat"><b>${unreviewed.length}</b> sin evaluación</span><span class="qc150-stat"><b>${planned.length}</b> previstas</span>`:q==='Q2'?`<span class="qc150-stat">${q2.weekend?'🟡 Ajuste por fin de semana':'📅 Fecha ordinaria'}</span>${`<span class="qc150-stat">🟢 Ejecución sugerida: ${esc(qcDisplayDate(q2Suggested))}</span>`+(q2.weekend?`<span class="qc150-stat">${esc(qcDisplayDate(q2.windowStart))} – ${esc(qcDisplayDate(q2.windowEnd))}</span>`:'')}`:`<span class="qc150-stat">${esc(phase)}</span><span class="qc150-stat">${q1Candidate?'🟢 Ejecución sugerida: '+qcDisplayDate(q1Candidate.date):plan.hasPlanned?plan.plannedCount+' muestra(s) previstas':'Sin muestra prevista'}</span>`}</div><details class="qc150-disclosure"><summary>Ver ${q==='Q3'?'jornadas':'programación'} <span aria-hidden="true">⌄</span></summary>${details}</details><div class="qc150-bottom">${warningDetail}<button type="button" class="secondary qc150-action" data-qc-evaluate="${q}" data-qc-base="${base}" data-qc-candidate="${q1Candidate?.id||''}" ${!ready||!hasExecution||!eligible?'disabled':''}>${q==='Q3'?'Evaluar Q3':'Registrar '+q}</button></div></article>`;
  });
  return `<section class="card sample-section qc-planner qc150-planner" aria-label="Planificador inteligente de controles"><div class="qc-planner-head"><div><h2>Planificador QC inteligente</h2><p>Fechas objetivo, ejecución real y recursos en un solo lugar.</p></div><button type="button" class="secondary" id="qc-planner-refresh">↻ Actualizar recursos</button></div>${plannerError?`<p class="qc-planner-error">${esc(plannerError)}</p>`:''}<div class="qc-planner-grid">${cards.join('')}</div><details class="qc150-help"><summary>ⓘ Criterios de programación QC</summary><p>Q1: cada 2 días calendario; martes a jueves como días ordinarios y viernes solo con análisis ejecutado; lunes y fines de semana no programables. Q2: ciclo fijo de 15 días; ventana jueves–martes solo cuando la fecha objetivo cae en fin de semana. Q3: una evaluación por jornada real y parámetro con ensayos ejecutados. Una muestra prevista no acredita ejecución ni conformidad.</p></details></section>`;
 };
@@ -466,6 +482,9 @@ function consolidatedSection(items){
 function attachTablePagination(root){
  root.querySelectorAll('.sample-section .sample-table-wrap').forEach(wrap=>{
   const table=wrap.querySelector('table'),body=table?.tBodies?.[0];
+  // La tabla de jornadas QC ya tiene un único paginador inteligente (qc-history-235).
+  // No agregar un segundo paginador que oculte filas de forma contradictoria.
+  if(wrap.closest('.sample-section')?.querySelector('#micro-daily-editor'))return;
   if(!body||wrap.dataset.paged)return;
   const rows=[...body.rows];if(rows.length<=5)return;
   wrap.dataset.paged='1';
@@ -617,17 +636,21 @@ function display(el,user,profile){
   enhanceQcPlanner(el);
   showQcLoadedIndicators(el,dailyControls);
   enhanceQcHistory(el);
-  enhanceQcArchive(el);
   enhanceQcAnalytics(el);
   enhanceQcExpediente(el);
   enhanceQcExpediente237(el);
   const refresh=el.querySelector('#qc-planner-refresh');if(refresh){refresh.disabled=plannerLoading;refresh.textContent=plannerLoading?'Consultando…':'Actualizar recursos';refresh.onclick=()=>{void loadPlannerResources(el,user,profile,{force:true});};}
   if(!plannerAutoRequested&&!plannerLoaded&&!plannerLoading){plannerAutoRequested=true;void loadPlannerResources(el,user,profile);}
   el.querySelectorAll('[data-qc-go]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.qcGo==='strains'&&b.dataset.qcAtcc){sessionStorage.setItem('micro_reactivation_context',JSON.stringify({atcc:b.dataset.qcAtcc,medium:'Control de calidad',test:'Q1',origin:'qc-planner'}));}window.dispatchEvent(new CustomEvent('micro:navigate',{detail:{page:b.dataset.qcGo,atcc:b.dataset.qcAtcc||''}}));}));
+  el.querySelectorAll('[data-qc-q3-id]').forEach(b=>b.addEventListener('click',()=>{
+   const id=b.dataset.qcQ3Id;
+   const open=el.querySelector(`[data-daily="${CSS.escape(id)}"]`);
+   if(open){open.dataset.qcPreferred='Q3';open.click();delete open.dataset.qcPreferred;}
+  }));
   el.querySelectorAll('[data-qc-evaluate]').forEach(b=>b.addEventListener('click',()=>{const base=b.dataset.qcBase||'';const q=b.dataset.qcEvaluate;const row=q==='Q1'?q1ExecutedCandidate(base,plannerDay(),plannerLast('Q1')?.date||''):dailyRows().filter(r=>r.executedCodes.size&&(q==='Q3'?q3Pendientes().some(p=>p.id===r.id):r.date>=base&&r.date<=plannerDay())).sort((a,c)=>a.date.localeCompare(c.date))[0];if(row){el.querySelector(`[data-daily="${CSS.escape(row.id)}"]`)?.click();const tab=el.querySelector(`#micro-daily-editor [data-qc234="${q}"]`);if(tab)tab.click();}else{plannerError='No hay una jornada ejecutada hoy. Registre primero el análisis real de las muestras.';display(el,user,profile);}}));
  }
  el.querySelectorAll('[data-qc-open-sample]').forEach(button=>button.addEventListener('click',()=>{const r=records.find(x=>x.id===button.dataset.qcOpenSample);if(!r||r.status!=='ASSIGNED')return;analysis(el,r,user,profile,editable);}));
- el.querySelectorAll('[data-daily]').forEach(button=>button.addEventListener('click',()=>{const row=dailyRows().find(x=>x.id===button.dataset.daily);if(!row||!row.executedCodes.size)return;const old=dailyControls.find(x=>x.id===row.id);const panel=el.querySelector('#micro-daily-editor');const controlFields=['Q1','Q2','Q3'].map(q=>`<fieldset class="qc-detail"><legend>${q} · ${q==='Q1'?'Control positivo / negativo':q==='Q2'?'Muestra fortificada':'Esterilidad de medios'}</legend><p class="qc-help">${q==='Q1'?'Registre la fase y los resultados observados para cada medio realmente ensayado.':q==='Q2'?'Registre la matriz, el NMP y los resultados observados. La conformidad requiere verificar los límites del método.':'El blanco debe permanecer sin crecimiento observable. Verifique lote vigente y condiciones reales antes de aprobar.'}</p><label>Aplicabilidad<select name="${q}_status"><option value="PENDIENTE">Pendiente de evaluación</option><option value="CONFORME">Ejecutado · conforme</option><option value="NO_CONFORME">Ejecutado · no conforme</option><option value="NO_APLICA">No aplica (justificar)</option></select></label><label>Fecha real de ejecución<input type="date" name="${q}_date" value="${esc(old?.controls?.[q]?.date||row.date)}"></label><label>Medio(s) efectivamente controlados<select name="${q}_medium"><option value="">Seleccione</option><option>A-1 Medium</option><option>Fluorocult LMX</option><option>Ambos medios</option></select></label>${q==='Q3'?'':`<label>Fase<select name="${q}_phase"><option value="">Seleccione</option><option value="POSITIVO">Positivo</option><option value="NEGATIVO">Negativo</option></select></label>`}${q==='Q2'?'<label>Matriz fortificada<input name="Q2_matrix" placeholder="Ej. Agua destilada"></label><label>NMP observado / 100 mL<input name="Q2_nmp" type="number" min="0" step="any" placeholder="Resultado NMP"></label>':''}<label>Hora inicio 35 °C<input type="datetime-local" name="${q}_start35"></label><label>Hora fin 35 °C<input type="datetime-local" name="${q}_end35"></label><label>Temperatura real 35 °C<input type="number" name="${q}_temp35" min="0" max="60" step="0.1" placeholder="35.0"></label><label>Hora inicio 44,5 °C (si aplica)<input type="datetime-local" name="${q}_start44"></label><label>Hora fin 44,5 °C (si aplica)<input type="datetime-local" name="${q}_end44"></label><label>Temperatura real 44,5 °C (si aplica)<input type="number" name="${q}_temp44" min="0" max="60" step="0.1" placeholder="44.5"></label><label>${q==='Q3'?'Crecimiento observado': 'Formación de gas'}<select name="${q}_gas"><option value="">Sin registrar</option><option value="SI">Sí</option><option value="NO">No</option></select></label>${q==='Q3'?'':`<label>Crecimiento / turbidez<select name="${q}_growth"><option value="">Sin registrar</option><option value="SI">Sí</option><option value="NO">No</option></select></label><label>Color azul-verde LMX (si aplica)<select name="${q}_color"><option value="">No evaluado</option><option value="SI">Sí</option><option value="NO">No</option></select></label><label>Fluorescencia LMX (si aplica)<select name="${q}_fluorescence"><option value="">No evaluado</option><option value="SI">Sí</option><option value="NO">No</option></select></label>`}<label>Observaciones y justificación<input name="${q}_notes" maxlength="500" placeholder="Desviaciones y observaciones"></label><output class="qc-conclusion" data-conclusion="${q}">Conclusión: pendiente de datos</output></fieldset>`).join('');panel.innerHTML=`<form id="daily-form" class="sample-grid"><div><strong>Jornada ejecutada: ${esc(row.parameter)} · ${esc(row.date)}</strong><p>Muestras ejecutadas: ${esc([...row.executedCodes].join(', '))}</p><p>Registrar una evaluación no equivale a comprobar automáticamente los criterios microbiológicos. Verifique las observaciones y los recursos en el planificador Q1/Q2/Q3.</p></div>${controlFields}<div class="sample-actions"><button type="submit">Guardar evaluación de jornada</button><button type="button" class="secondary" id="daily-cancel">Cancelar</button></div><p id="daily-message" role="status"></p></form>`;const form=panel.querySelector('form');
+ el.querySelectorAll('[data-daily]').forEach(button=>button.addEventListener('click',()=>{const row=dailyRows().find(x=>x.id===button.dataset.daily);if(!row||!row.executedCodes.size)return;const old=dailyControls.find(x=>x.id===row.id);const preferredQc=button.dataset.qcPreferred||'Q1';const mediaHint=qcMediaForDate(row.date);const panel=el.querySelector('#micro-daily-editor');const controlFields=['Q1','Q2','Q3'].map(q=>`<fieldset class="qc-detail"><legend>${q} · ${q==='Q1'?'Control positivo / negativo':q==='Q2'?'Muestra fortificada':'Esterilidad de medios'}</legend><p class="qc-help">${q==='Q1'?'Registre la fase y los resultados observados para cada medio realmente ensayado.':q==='Q2'?'Registre la matriz, el NMP y los resultados observados. La conformidad requiere verificar los límites del método.':'El blanco debe permanecer sin crecimiento observable. Verifique lote vigente y condiciones reales antes de aprobar.'}</p><label>Aplicabilidad<select name="${q}_status"><option value="PENDIENTE">Pendiente de evaluación</option><option value="CONFORME">Ejecutado · conforme</option><option value="NO_CONFORME">Ejecutado · no conforme</option><option value="NO_APLICA">No aplica (justificar)</option></select></label><label>Fecha real de ejecución<input type="date" name="${q}_date" value="${esc(old?.controls?.[q]?.date||row.date)}"></label><label>Medio(s) efectivamente controlados<select name="${q}_medium"><option value="">Seleccione</option><option>A-1 Medium</option><option>Fluorocult LMX</option><option>Ambos medios</option></select></label>${q==='Q3'?'':`<label>Fase<select name="${q}_phase"><option value="">Seleccione</option><option value="POSITIVO">Positivo</option><option value="NEGATIVO">Negativo</option></select></label>`}${q==='Q2'?'<label>Matriz fortificada<input name="Q2_matrix" placeholder="Ej. Agua destilada"></label><label>NMP observado / 100 mL<input name="Q2_nmp" type="number" min="0" step="any" placeholder="Resultado NMP"></label>':''}<label>Hora inicio 35 °C<input type="datetime-local" name="${q}_start35"></label><label>Hora fin 35 °C<input type="datetime-local" name="${q}_end35"></label><label>Temperatura real 35 °C<input type="number" name="${q}_temp35" min="0" max="60" step="0.1" placeholder="35.0"></label><label>Hora inicio 44,5 °C (si aplica)<input type="datetime-local" name="${q}_start44"></label><label>Hora fin 44,5 °C (si aplica)<input type="datetime-local" name="${q}_end44"></label><label>Temperatura real 44,5 °C (si aplica)<input type="number" name="${q}_temp44" min="0" max="60" step="0.1" placeholder="44.5"></label><label>${q==='Q3'?'Crecimiento observado': 'Formación de gas'}<select name="${q}_gas"><option value="">Sin registrar</option><option value="SI">Sí</option><option value="NO">No</option></select></label>${q==='Q3'?'':`<label>Crecimiento / turbidez<select name="${q}_growth"><option value="">Sin registrar</option><option value="SI">Sí</option><option value="NO">No</option></select></label><label>Color azul-verde LMX (si aplica)<select name="${q}_color"><option value="">No evaluado</option><option value="SI">Sí</option><option value="NO">No</option></select></label><label>Fluorescencia LMX (si aplica)<select name="${q}_fluorescence"><option value="">No evaluado</option><option value="SI">Sí</option><option value="NO">No</option></select></label>`}<label>Observaciones y justificación<input name="${q}_notes" maxlength="500" placeholder="Desviaciones y observaciones"></label><output class="qc-conclusion" data-conclusion="${q}">Conclusión: pendiente de datos</output></fieldset>`).join('');panel.innerHTML=`<form id="daily-form" class="sample-grid"><div><strong>Jornada ejecutada: ${esc(row.parameter)} · ${esc(row.date)}</strong><p>Muestras ejecutadas: ${esc([...row.executedCodes].join(', '))}</p><p>Registrar una evaluación no equivale a comprobar automáticamente los criterios microbiológicos. Verifique las observaciones y los recursos en el planificador Q1/Q2/Q3.</p></div>${controlFields}<div class="sample-actions"><button type="submit">Guardar evaluación de jornada</button><button type="button" class="secondary" id="daily-cancel">Cancelar</button></div><p id="daily-message" role="status"></p></form>`;const form=panel.querySelector('form');
 // V1.0.255: observaciones dentro del formulario original; sin panel duplicado.
 // Los campos principales representan A-1 cuando se seleccionan ambos medios.
 // Para LMX se muestran los mismos campos inmediatamente debajo de los originales.
@@ -711,6 +734,13 @@ qcTabs.addEventListener('click',e=>{const b=e.target.closest('[data-qc-tab]');if
 for(const q of ['Q1','Q2','Q3']){const c=old?.controls?.[q]||{};form.elements[q+'_status'].value=c.status||'PENDIENTE';if(form.elements[q+'_reference'])form.elements[q+'_reference'].value=c.reference||'';form.elements[q+'_notes'].value=c.notes||'';for(const k of ['medium','phase','matrix','nmp','start35','end35','temp35','start44','end44','temp44','gas','growth','color','fluorescence']){const f=form.elements[q+'_'+k];if(f&&!(q==='Q1'&&k==='phase')&&!(q==='Q2'&&k==='nmp'))f.value=c[k]??'';}}
 // V1.0.255: restaurar la fase calculada DESPUÉS de hidratar el formulario.
 // La hidratación anterior asignaba '' a Q2_phase y borraba la fase automática.
+// Mostrar automáticamente los medios pertinentes sin alterar evaluaciones ya guardadas.
+for(const q of ['Q1','Q2','Q3']){
+ const field=form.elements[q+'_medium'];
+ if(field&&!old?.controls?.[q]?.medium&&mediaHint.label){field.value=mediaHint.label;field.dispatchEvent(new Event('change',{bubbles:true}));}
+ const section=field?.closest('fieldset');
+ if(section){const badge=document.createElement('div');badge.className='qc279-media-hint';badge.textContent=`Medios identificados en ${row.date}: ${mediaHint.count} de 2 · ${mediaHint.label||'Sin medio identificable'} · ${mediaHint.parameters.join(' + ')||'Sin parámetros'}`;section.querySelector('.qc-help')?.after(badge);}
+}
 const q2EffectivePhase=old?.controls?.Q2?.phase||q2AutoPhase||'';
 if(q2EffectivePhase){q2PhaseField.value=q2EffectivePhase;q2PhaseField.disabled=true;}
 else {q2PhaseField.disabled=false;}
@@ -932,7 +962,7 @@ try{await runTransaction(db,async tx=>{
  }
 });msg.textContent='✓ Registro guardado en Firebase. Q3: '+controls.Q3.status.replaceAll('_',' ')+
  (sharedRows.length?' · Q1/Q3 compartidos con '+sharedRows.map(r=>r.parameter).join(', ')+'.':'')+
- ' Los controles pendientes pueden completarse después.';setTimeout(()=>{if(panel.isConnected)panel.querySelector('#daily-cancel')?.click();},650);}catch(err){msg.textContent='No se pudo guardar: '+err.message;}};openQcOperation(panel,form,row);}));
+ ' Los controles pendientes pueden completarse después.';setTimeout(()=>{if(panel.isConnected)panel.querySelector('#daily-cancel')?.click();},650);}catch(err){msg.textContent='No se pudo guardar: '+err.message;}};openQcOperation(panel,form,row,preferredQc);}));
  const assignment=el.querySelector('#sample-assignment');
  const applyPlannedDate=()=>{const r=pending.find(x=>x.code===assignment.elements.id.value);assignment.elements.plannedDate.value=r?.receivedDate||'';assignment.elements.plannedTime.value=r?.receivedTime||'';};
  assignment.elements.id.addEventListener('change',applyPlannedDate);
@@ -1103,8 +1133,8 @@ function subscribeSamples(el,user,profile){
   if(!historyAutoStarted){historyAutoStarted=true;queueMicrotask(()=>ensureAnalyticalHistory(el,user,profile));}
   // Las altas de otras computadoras también actualizan el total, sin sondeo continuo.
   if(wasRecentReady&&recentMembershipChanged&&!snapshot.metadata.hasPendingWrites){
-   // Invalidar cifras globales hasta confirmar el cambio; no exhibir totales antiguos.
-   sampleTotal=null;globalMetrics.finished=null;globalMetrics.duplicates=null;
+   // Mantener último valor confirmado mientras se verifica el conteo remoto.
+   // No borrar las cifras durante la actualización: evita parpadeos 748 → … → 748.
    refreshSampleCount(el,user,profile,{immediate:true});
   }
  },err=>{if(token===sampleListenerToken)feedback(el,'Error de consulta: '+err.message);});
@@ -1132,12 +1162,12 @@ export function stopSamples(){
 }
 export function renderSamples(el,user,profile,mode="samples"){
  stopSamples();sampleViewMode=mode;
- dailyControls=[];records=[];recentSamples=[];historicalSamples=[];pendingSamples=[];historicalCursor=null;historyExhausted=false;historyLoading=false;sampleTotal=null;globalMetrics={finished:null,duplicates:null};metricError="";pendingReady={RECEIVED:false,ASSIGNED:false};recentSnapshotReady=false;historyAutoRunning=false;historyAutoStarted=false;historyError='';
+ dailyControls=[];records=[];recentSamples=[];historicalSamples=[];pendingSamples=[];historicalCursor=null;historyExhausted=false;historyLoading=false;sampleTotal=Number.isInteger(cachedMetrics().total)?cachedMetrics().total:null;globalMetrics={finished:Number.isInteger(cachedMetrics().finished)?cachedMetrics().finished:null,duplicates:Number.isInteger(cachedMetrics().duplicates)?cachedMetrics().duplicates:null};metricError="";pendingReady={RECEIVED:false,ASSIGNED:false};recentSnapshotReady=false;historyAutoRunning=false;historyAutoStarted=false;historyError='';
  plannerLoaded=false;plannerError='';plannerAutoRequested=false;plannerMedia=[];plannerReactions=[];message='';catalog={companies:[],branches:[],descriptions:[]};
  display(el,user,profile);
  refreshSampleCount(el,user,profile,{immediate:true});
  subscribeSummary(el,user,profile);
  getDoc(doc(db,'microCatalogs','officialEntry')).then(s=>{if(s.exists()){for(const k of Object.keys(catalog))catalog[k]=Array.isArray(s.data()[k])?s.data()[k]:[];if(el.isConnected)display(el,user,profile);}}).catch(err=>feedback(el,'No se pudo cargar el catálogo: '+err.message));
- unsubDaily=onSnapshot(query(collection(db,'microDailyQuality'),orderBy('date','desc'),limit(150)),snapshot=>{dailyControls=snapshot.docs.map(d=>({id:d.id,...d.data()}));if(el.isConnected)display(el,user,profile);},err=>feedback(el,'No se pudieron consultar los controles diarios: '+err.message));
+ unsubDaily=onSnapshot(query(collection(db,'microDailyQuality'),orderBy('date','desc'),limit(350)),snapshot=>{dailyControls=snapshot.docs.map(d=>({id:d.id,...d.data()}));if(el.isConnected)display(el,user,profile);},err=>feedback(el,'No se pudieron consultar los controles diarios: '+err.message));
  subscribeSamples(el,user,profile);
 }

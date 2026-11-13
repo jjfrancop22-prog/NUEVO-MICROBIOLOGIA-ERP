@@ -1,0 +1,16 @@
+/* Refinamiento exclusivamente visual del acceso; no altera Firebase ni lógica operativa. */
+.psi-login-page{background:radial-gradient(ellipse at 82% 12%,#2a84b05e,transparent 42%),radial-gradient(ellipse at 5% 95%,#18588b,transparent 42%),linear-gradient(140deg,#091d37,#10406a 65%,#0b294a)!important}
+.psi-login-shell{border-radius:26px!important;box-shadow:0 34px 95px #06172b8c!important;border:1px solid #a9d4ee7d!important}
+.psi-login-intro{background:linear-gradient(155deg,#123b65,#1879ad 82%,#258dc2)!important}
+.psi-login-intro:before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 85% 18%,#ffffff20,transparent 36%);pointer-events:none}
+.psi-login-mark img{width:116px!important;height:91px!important;padding:10px!important;background:#fff!important;box-shadow:0 10px 25px #092b4652}
+.psi-login-intro h1{font-weight:850;letter-spacing:-1.5px!important}
+.psi-login-feature{border:1px solid #ffffff22;background:#ffffff0d;border-radius:11px;padding:10px 13px;margin:9px 0!important}
+.psi-login-panel{background:linear-gradient(180deg,#fff,#f8fcff)!important}
+.psi-login-version{background:#e7f4ff!important;color:#155785!important;border:1px solid #c9e4f7}
+.psi-login-form-wrap{max-width:405px!important}
+.psi-login-form>input,.psi-login-password input{background:#fff!important;transition:border-color .18s,box-shadow .18s}
+.psi-login-submit{background:linear-gradient(105deg,#145a93,#188fc0)!important;box-shadow:0 10px 24px #0d79b52e!important}
+.psi-login-footer{font-size:12px!important}
+.psi-login-footer strong{font-weight:850!important}
+@media(max-width:760px){.psi-login-mobile-brand img{width:92px!important;height:75px!important;background:#fff;padding:5px;border-radius:12px}.psi-login-panel{padding:24px!important}}

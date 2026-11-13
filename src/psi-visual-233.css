@@ -28,3 +28,15 @@ body .qc-planner .qc-planner-warning{background:#fff8f3;border-color:#f0d7c7}
 .qc233-footer{padding:15px 25px;border-top:1px solid #d8e8f4;display:flex;align-items:center;justify-content:space-between;gap:14px;color:#66849a;font-size:12px}
 .qc233-primary{background:#197db7;color:#fff;border-color:#197db7}
 @media(max-width:700px){.qc233-overlay{padding:8px}.qc233-header{padding:16px;flex-wrap:wrap}.qc233-body{padding:16px}.qc233-footer{padding:12px;flex-wrap:wrap}}
+
+/* V1.0.286 — diseño compacto y consistente de controles QC */
+body .qc-planner{border-radius:18px!important;box-shadow:0 12px 32px rgba(17,66,105,.07)!important}
+body .qc-planner .qc-planner-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding-bottom:15px}
+body .qc-planner .qc-planner-grid{gap:12px!important;margin-top:14px!important;align-items:stretch}
+body .qc-planner .qc-planner-card{padding:15px!important;border-radius:14px!important;box-shadow:0 5px 16px rgba(20,75,123,.045)!important;transition:box-shadow .18s ease,transform .18s ease}
+body .qc-planner .qc-planner-card:hover{box-shadow:0 10px 24px rgba(20,75,123,.11)!important;transform:translateY(-1px)}
+body .qc-planner .qc150-date{border-radius:11px!important;padding:12px!important}
+body .qc-planner .qc150-disclosure{border-radius:10px!important}
+body .qc-planner button:focus-visible,body .qc-planner summary:focus-visible{outline:3px solid #62b7e8;outline-offset:2px}
+@media(max-width:900px){body .qc-planner .qc-planner-grid{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))!important}}
+@media(prefers-reduced-motion:reduce){body .qc-planner .qc-planner-card{transition:none!important}body .qc-planner .qc-planner-card:hover{transform:none}}
