@@ -11,7 +11,7 @@ let dailyControls=[];let unsubDaily=null;
 // V1.0.255: ventana viva pequeña + historial paginado bajo demanda.
 const SAMPLE_PAGE_SIZE=10;
 const SAMPLE_HISTORY_BATCH=100;
-const APP_VERSION="1.0.286";
+const APP_VERSION="1.0.293";
 const METRIC_CACHE_KEY='microSamples_globalMetrics_v282';
 // El resumen remoto no está provisionado ni autorizado en las reglas actuales.
 // No abrir listeners a documentos inaccesibles: evita permission-denied y lecturas fallidas.
@@ -560,6 +560,9 @@ function showSampleTrace(r){
 }
 const sampleTabNames={reception:"Recepción",official:"Ingreso oficial",analysis:"Análisis",consolidated:"Registro general",results:"Resultados y NMP",duplicates:"Control de duplicados",qc:"Control de calidad Q1/Q2/Q3"};
 function display(el,user,profile){
+ // Mantener el formulario analítico montado durante actualizaciones Firebase:
+ // recrearlo mientras está abierto destruye sus eventos y los datos escritos.
+ if(document.querySelector('#psi-analysis-workspace[open]'))return;
  const editable=allowed(profile);
  const pending=records.filter(r=>r.status==='RECEIVED'&&!r.parentId);
  const assigned=records.filter(r=>r.status==='ASSIGNED');
@@ -1075,17 +1078,19 @@ function analysis(el,r,user,profile,editable){
  if(fecal){const sync=()=>{const d=form.elements.fecal35EndDate.value,t=form.elements.fecal35End.value;if(d&&t){form.elements.fecal44Date.value=d;form.elements.fecal44Start.value=t;calculate('fecal44',21,true);}};for(const k of ['fecal35Date','fecal35Start','fecal35EndDate','fecal35End'])form.elements[k].addEventListener('change',sync);if(!a.fecal44Date)sync();}
  const collect=()=>{const f=new FormData(form),tubes={},dilutions={};for(const [i,p] of r.parameters.entries()){tubes[p]=[0,1,2].map(j=>{const v=f.get(`p${i}_${j}`);return v===null||v===''?null:Number(v);});dilutions[p]=Number(f.get(`d${i}`));}const data={date:f.get('date'),temp35:f.get('temp35'),notes:f.get('notes'),tubes,dilutions};if(fecal)data.temp44=f.get('temp44');for(const [key] of stages)for(const suffix of ['Date','Start','EndDate','End'])data[key+suffix]=f.get(key+suffix);return data;};
  const validate=()=>{const d=collect(),issues=[];if(!d.date)issues.push('Fecha real de ensayo');if(firstKey&&d[firstKey+'Date']&&d.date!==d[firstKey+'Date'])issues.push('La fecha real de ensayo debe coincidir con el inicio de la primera incubación.');for(const [key,h] of stages){const sd=d[key+'Date'],st=d[key+'Start'],ed=d[key+'EndDate'],et=d[key+'End'];if(!sd||!st||!ed||!et)issues.push(`Horarios completos de ${key}`);else if(new Date(`${ed}T${et}`)<=new Date(`${sd}T${st}`))issues.push(`Fin posterior al inicio en ${key}`);}for(const p of r.parameters){if(!nmpLookup(r.type,d.tubes[p]))issues.push(`Combinación NMP no disponible o incompleta de ${p}`);if(!(d.dilutions[p]>0))issues.push(`Dilución de ${p}`);}return issues;};
- const updateNmp=()=>{const d=collect();for(const [i,p] of r.parameters.entries()){const target=box.querySelector(`[data-nmp="${i}"]`),entry=nmpLookup(r.type,d.tubes[p]);target.textContent=entry?`NMP/100 mL: ${scaledNmp(entry.value,d.dilutions[p])} · IC 95 %: ${scaledNmp(entry.low,d.dilutions[p])} – ${scaledNmp(entry.high,d.dilutions[p])} · ${entry.source==='ESTIMATED'?'Estimación estadística (combinación no tabulada)':'Tabla '+(['Agua potable','Agua de consumo'].includes(r.type)?'10 × 10 mL':'9221:IV · 5-5-5')} (base: ${entry.value})`:'⚠️ Complete los tubos o revise la combinación: no consta en la tabla verificada.';}};
+ const updateNmp=()=>{const d=collect();for(const [i,p] of r.parameters.entries()){const target=form.querySelector(`[data-nmp="${i}"]`),entry=nmpLookup(r.type,d.tubes[p]);if(!target)continue;target.textContent=entry?`NMP/100 mL: ${scaledNmp(entry.value,d.dilutions[p])} · IC 95 %: ${scaledNmp(entry.low,d.dilutions[p])} – ${scaledNmp(entry.high,d.dilutions[p])} · ${entry.source==='ESTIMATED'?'Estimación estadística (combinación no tabulada)':'Tabla '+(['Agua potable','Agua de consumo'].includes(r.type)?'10 × 10 mL':'9221:IV · 5-5-5')} (base: ${entry.value})`:'⚠️ Complete los tubos o revise la combinación: no consta en la tabla verificada.';}};
  form.addEventListener('input',updateNmp);form.addEventListener('change',updateNmp);updateNmp();
- box.querySelector('#analysis-finish').onclick=async()=>{
+ form.querySelector('#analysis-finish').onclick=async()=>{
  if(!editable||r.status==='FINISHED')return;
  const issues=validate();
  if(issues.length){out.textContent='⚠️ No se puede finalizar: '+issues.join(' · ');return;}
  if(!confirm('¿Confirma la fecha REAL de ensayo '+collect().date+' para vincular Q1/Q2/Q3, así como las incubaciones y resultados NMP? El análisis quedará bloqueado.'))return;
  const data=collect();
  data.nmpResults=Object.fromEntries(r.parameters.map(p=>{const entry=nmpLookup(r.type,data.tubes[p]);return [p,{table:['Agua potable','Agua de consumo'].includes(r.type)?'9221B_10x10':'9221B_555',base:entry.value,lower:entry.low,upper:entry.high,source:entry.source||'TABLE',dilution:data.dilutions[p],result:scaledNmp(entry.value,data.dilutions[p])}];}));
- const finishButton=box.querySelector('#analysis-finish');
+ const finishButton=form.querySelector('#analysis-finish');
  finishButton.disabled=true;
+ finishButton.textContent='Guardando en Firebase…';
+ out.textContent='Guardando análisis; espere la confirmación del servidor…';
  let committed=false;
  try{
   await runTransaction(db,async tx=>{
@@ -1096,6 +1101,7 @@ function analysis(el,r,user,profile,editable){
   committed=true;
  }catch(err){
   finishButton.disabled=false;
+  finishButton.textContent='🔒 Finalizar análisis';
   out.textContent=(err.code==='permission-denied'||String(err.message).includes('permission'))?'⛔ Firebase rechazó el cierre (permission-denied). Verifique los permisos de muestras.':'No se pudo finalizar: '+err.message;
   return;
  }
@@ -1105,13 +1111,13 @@ function analysis(el,r,user,profile,editable){
   try{updateLocalSample(r.id,{status:'FINISHED',analysis:data});}catch(err){console.warn('Actualización local pendiente:',err);}
   // El conteo se vuelve a consultar al servidor; no anticipar números no confirmados.
   message='✓ Análisis '+r.code+' finalizado y confirmado en Firebase.';
-  try{if(el.isConnected)display(el,user,profile);}catch(err){console.error('Error de presentación posterior al guardado:',err);if(out.isConnected)out.textContent=message;}
+  try{document.querySelector('#psi-analysis-workspace[open]')?.close();if(el.isConnected)display(el,user,profile);}catch(err){console.error('Error de presentación posterior al guardado:',err);if(out.isConnected)out.textContent=message;}
   try{refreshSampleCount(el,user,profile);}catch(err){console.warn('Conteo auxiliar pendiente:',err);}
  }
 };
- box.querySelector('#analysis-validate').onclick=()=>{const issues=validate();out.textContent=issues.length?'⚠️ Pendiente: '+issues.join(' · '):'✓ Campos completos, combinación NMP disponible y cronología coherente.';};
+ form.querySelector('#analysis-validate').onclick=()=>{const issues=validate();updateNmp();out.textContent=issues.length?'⚠️ Pendiente: '+issues.join(' · '):'✓ Campos completos, combinación NMP disponible y cronología coherente.';};
  form.onsubmit=async e=>{e.preventDefault();if(!editable||r.status==='FINISHED')return;const data=collect();try{await runTransaction(db,async tx=>{const ref=doc(db,'microSamples',r.id),s=await tx.get(ref);if(!s.exists()||s.data().status!=='ASSIGNED')throw Error('El registro ya no admite cambios.');tx.update(ref,{analysis:data,updatedAt:serverTimestamp(),history:[...(s.data().history||[]),{action:'ANALYSIS_DRAFT',uid:user.uid,at:new Date().toISOString()}]});});out.textContent='✓ Borrador confirmado en Firebase. Los horarios reales siguen siendo editables.';}catch(err){out.textContent='Error: '+err.message;}};
- box.scrollIntoView({behavior:'smooth',block:'nearest'});
+ (form.closest('#psi-analysis-workspace')||box).scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function subscribeSamples(el,user,profile){
  const token=++sampleListenerToken;

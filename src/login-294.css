@@ -1,0 +1,11 @@
+/* V1.0.294 · Refinamiento del acceso institucional. Sin cambios de autenticación. */
+.psi-login-page{background:radial-gradient(ellipse at 15% 18%,#2276a65e,transparent 42%),linear-gradient(130deg,#071f3c,#123d68 65%,#185b8b)!important}
+.psi-login-shell{max-width:1020px;min-height:570px;border:1px solid #9bc9e4;border-radius:20px;box-shadow:0 30px 90px #04172c8a}
+.psi-login-intro{background:linear-gradient(150deg,#0e335c,#166da3 75%,#2198c8)!important}
+.psi-login-intro-body{padding:15px 0}.psi-login-intro h1{font-weight:850;letter-spacing:-1.6px}
+.psi-login-panel{background:linear-gradient(165deg,#fff,#f5faff);padding:32px 42px 25px}
+.psi-login-version{background:#e3f2fc;border:1px solid #bbdef3;color:#115e8e;padding:9px 15px}
+.psi-login-secure{background:#e8f6f1;color:#137457}
+.psi-login-submit{background:linear-gradient(110deg,#14578f,#178ec2)!important}
+.psi-login-footer{font-size:12px}.psi-login-footer strong{font-weight:800}
+@media(max-width:760px){.psi-login-shell{min-height:calc(100dvh - 24px)}.psi-login-panel{padding:24px 20px}}
