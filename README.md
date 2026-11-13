@@ -38,3 +38,10 @@ El `apiKey` web de Firebase es identificador público del cliente, **no es una c
 - No se han cambiado las reglas Firestore ni la estructura de documentos.
 - LIMITACIONES: historial de 60 entradas por dirección; mensajes enviados desde otras pestañas no se reflejan en tiempo real en la sesión del remitente hasta recargar; notificaciones solo dentro de la app (no push de sistema); la entrega a un dispositivo no se confirma, solo la escritura en Firebase.
 - Instalación: `npm install`, `npm run dev`; compilación: `npm run build`.
+
+
+## V1.0.291 · Comunicaciones bidireccionales
+
+IMPORTANTE: desplegar `firestore.rules` junto con esta versión. Las reglas anteriores solo permitían a los administradores iniciar mensajes hacia analistas, y restringían el directorio a administradores. Las reglas nuevas permiten intercambios entre usuarios activos. La consulta del directorio expone los campos de perfil existentes a usuarios activos; revisar la política interna de privacidad antes de desplegar.
+
+Los mensajes enviados y recibidos utilizan suscripciones limitadas (60 cada una), y los nombres provienen del perfil `users.name`. Si el perfil carece de nombre, se indica «Usuario sin nombre registrado»; completar el perfil desde Administración. Verificar con dos cuentas reales.
