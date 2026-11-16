@@ -1,3 +1,4 @@
+import {watchAlertQuery} from './shared-alert-listeners.js';
 import {qcResources,qcPhase} from './qc-intelligence';
 import {watchCleaningAlerts} from './cleaning-alerts.js';
 let psiQcReactivationAlerts=[];let psiQcDaily=[];let psiQcReactions=[];let psiQcMedia=[];let psiQcReady={daily:false,reactions:false,media:false};let psiQcAlertError="";
@@ -197,7 +198,7 @@ function startAreaNotificationWatch(){
  psiAlertStops.push(watchCleaningAlerts(db,(alerts,meta)=>{psiCleaningAlerts=alerts;psiCleaningAlertErrors=meta?.failed||[];drawNotifications();}));
  const isAdmin=profile.role==='ADMIN',week=psiWeekKey();
  const autoclaveCycles=[];
- psiAlertStops.push(onSnapshot(collection(db,'microAutoclaveCycles'),snap=>{
+ psiAlertStops.push(watchAlertQuery(collection(db,'microAutoclaveCycles'),snap=>{
   const cycles=snap.docs.map(d=>({id:d.id,...d.data()}));
   const localToday=new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Guayaquil',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
   const addMonths=(iso,n)=>{const [y,m,d]=iso.split('-').map(Number),v=new Date(Date.UTC(y,m-1+n,1));v.setUTCDate(Math.min(d,new Date(Date.UTC(v.getUTCFullYear(),v.getUTCMonth()+1,0)).getUTCDate()));return v.toISOString().slice(0,10)};
@@ -214,7 +215,7 @@ function startAreaNotificationWatch(){
  },err=>{console.warn('Avisos de autoclaves:',err);psiAutoclaveAlerts=[];drawNotifications()}));
 
  if(isAdmin){
-  psiAlertStops.push(onSnapshot(query(collection(db,'monitoringAreaControls'),where('status','==','PENDIENTE_REVISION_TECNICA')),snap=>{psiApprovalAlerts=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.readingDate||'').localeCompare(String(a.readingDate||'')));drawNotifications();},e=>{console.warn('Aprobaciones: ',e);psiApprovalAlerts=[];drawNotifications();}));
+  psiAlertStops.push(watchAlertQuery(query(collection(db,'monitoringAreaControls'),where('status','==','PENDIENTE_REVISION_TECNICA')),snap=>{psiApprovalAlerts=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.readingDate||'').localeCompare(String(a.readingDate||'')));drawNotifications();},e=>{console.warn('Aprobaciones: ',e);psiApprovalAlerts=[];drawNotifications();}));
   getDocs(collection(db,'users')).then(snap=>{psiAnalysts=snap.docs.map(d=>({uid:d.id,...d.data()})).filter(u=>u.active!==false&&u.role!=='ADMIN');drawNotifications();}).catch(e=>console.warn('Usuarios para asignación',e));
  }
  // Las alertas usan exactamente el saldo del inventario: AN descuenta también usos de cepas.
@@ -231,11 +232,11 @@ function startAreaNotificationWatch(){
    }).sort((a,b)=>a.expiry.localeCompare(b.expiry));
    drawNotifications();
   };
-  psiAlertStops.push(onSnapshot(collection(db,'microMediaPreparations'),snap=>{psiMediaPreps=snap.docs.map(d=>({id:d.id,...d.data()}));psiMediaAlertError='';refreshMedia();},e=>{psiMediaExpiryAlerts=[];psiMediaAlertError=e.code||e.message;drawNotifications();}));
-  psiAlertStops.push(onSnapshot(collection(db,'microStrainAnUses'),snap=>{psiAnUses=snap.docs.map(d=>d.data());psiAnUsesReady=true;refreshMedia();},e=>{psiMediaExpiryAlerts=[];psiMediaAlertError=e.code||e.message;drawNotifications();}));
+  psiAlertStops.push(watchAlertQuery(collection(db,'microMediaPreparations'),snap=>{psiMediaPreps=snap.docs.map(d=>({id:d.id,...d.data()}));psiMediaAlertError='';refreshMedia();},e=>{psiMediaExpiryAlerts=[];psiMediaAlertError=e.code||e.message;drawNotifications();}));
+  psiAlertStops.push(watchAlertQuery(collection(db,'microStrainAnUses'),snap=>{psiAnUses=snap.docs.map(d=>d.data());psiAnUsesReady=true;refreshMedia();},e=>{psiMediaExpiryAlerts=[];psiMediaAlertError=e.code||e.message;drawNotifications();}));
   // Q1/Q2: reactivaciones APTAS faltantes según el mismo criterio técnico de QC.
   for(const [key,col,ref] of [['daily','microDailyQuality',query(collection(db,'microDailyQuality'),orderBy('date','desc'),limit(350))],['reactions','microStrainReactivations',collection(db,'microStrainReactivations')],['media','microMediaPreparations',collection(db,'microMediaPreparations')]]){
-   psiAlertStops.push(onSnapshot(ref,snap=>{
+   psiAlertStops.push(watchAlertQuery(ref,snap=>{
     const rows=snap.docs.map(d=>({id:d.id,...d.data()}));
     if(key==='daily')psiQcDaily=rows;
     if(key==='reactions')psiQcReactions=rows;
@@ -245,7 +246,7 @@ function startAreaNotificationWatch(){
   }
   // Cepas: saldo físico actual (no usar live(), que oculta vencidas).
   // No notificar preparaciones agotadas, rechazadas o cerradas.
-  psiAlertStops.push(onSnapshot(collection(db,'microStrainPreparations'),snap=>{
+  psiAlertStops.push(watchAlertQuery(collection(db,'microStrainPreparations'),snap=>{
    const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Guayaquil',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
    const end=psiAddDays(today,3);
    psiStrainAlerts=snap.docs.map(d=>({id:d.id,...d.data()})).filter(p=>{
@@ -271,10 +272,10 @@ function startAreaNotificationWatch(){
    }).sort((a,b)=>String(a.next).localeCompare(String(b.next)));
    drawNotifications();
   };
-  psiAlertStops.push(onSnapshot(collection(db,'monitoringAreaPoints'),snap=>{areaPoints=snap.docs.map(d=>({code:d.id,...d.data()}));pointsReady=true;refreshAreas();},e=>console.warn('Catálogo de monitoreo:',e)));
-  psiAlertStops.push(onSnapshot(collection(db,'monitoringAreaControls'),snap=>{areaControls=snap.docs.map(d=>d.data());controlsReady=true;refreshAreas();},e=>console.warn('Controles de monitoreo:',e)));
+  psiAlertStops.push(watchAlertQuery(collection(db,'monitoringAreaPoints'),snap=>{areaPoints=snap.docs.map(d=>({code:d.id,...d.data()}));pointsReady=true;refreshAreas();},e=>console.warn('Catálogo de monitoreo:',e)));
+  psiAlertStops.push(watchAlertQuery(collection(db,'monitoringAreaControls'),snap=>{areaControls=snap.docs.map(d=>d.data());controlsReady=true;refreshAreas();},e=>console.warn('Controles de monitoreo:',e)));
  }
- psiAlertStops.push(onSnapshot(doc(db,'monitoringAreaAssignments',week),snap=>{psiWeekAssignment=snap.exists()?snap.data():null;drawNotifications();},e=>{console.warn('Asignación semanal',e);psiWeekAssignment=null;drawNotifications();}));
+ psiAlertStops.push(watchAlertQuery(doc(db,'monitoringAreaAssignments',week),snap=>{psiWeekAssignment=snap.exists()?snap.data():null;drawNotifications();},e=>{console.warn('Asignación semanal',e);psiWeekAssignment=null;drawNotifications();}));
 }
 function shell(){
  const restricted=profile?.role==='PERSONAL_LIMPIEZA';

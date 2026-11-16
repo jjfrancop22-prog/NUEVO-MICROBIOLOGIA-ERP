@@ -1,3 +1,4 @@
+import {watchAlertQuery} from './shared-alert-listeners.js';
 import {collection,onSnapshot} from 'firebase/firestore';
 import {PERIODIC_CLEANING,cleaningSchedule} from './cleaning-frequency.js';
 // Alertas calculadas a partir de registros existentes; sin escrituras ni duplicados.
@@ -42,6 +43,6 @@ export function watchCleaningAlerts(db,notify){
   }
   notify([...areaDaily,...periodic,...daily],{failed:[...failed],ready:[...ready]});
  };
- const stops=names.map(name=>onSnapshot(collection(db,name),snap=>{state[name]=snap.docs.map(d=>({id:d.id,...d.data()}));ready.add(name);failed.delete(name);publish()},err=>{console.warn('Alertas de limpieza:',name,err);failed.add(name);ready.delete(name);publish()}));
+ const stops=names.map(name=>watchAlertQuery(collection(db,name),snap=>{state[name]=snap.docs.map(d=>({id:d.id,...d.data()}));ready.add(name);failed.delete(name);publish()},err=>{console.warn('Alertas de limpieza:',name,err);failed.add(name);ready.delete(name);publish()}));
  return ()=>{stopped=true;stops.forEach(stop=>stop())};
 }

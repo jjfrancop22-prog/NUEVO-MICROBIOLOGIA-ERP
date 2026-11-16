@@ -1,3 +1,4 @@
+import {watchAlertQuery} from './shared-alert-listeners.js';
 import {db} from './firebase';
 import {collection,doc,onSnapshot,runTransaction,serverTimestamp} from 'firebase/firestore';
 import './cleaning-plan.css';
@@ -52,4 +53,4 @@ let notificationTarget=null;
 try{notificationTarget=JSON.parse(sessionStorage.getItem('psi_cleaning_target')||'null')}catch{}
 sessionStorage.removeItem('psi_cleaning_target');
 if(notificationTarget&&['area','hood','balance','turb','des','est','freezer','sterilizer','incubator','fridge2','fridge'].includes(notificationTarget.id)&&/^\d{4}-\d{2}-\d{2}$/.test(notificationTarget.date||'')){viewDate=notificationTarget.date;formDate=viewDate;tab=notificationTarget.id==='area'?'areas':'equipos';}
-for(const col of (role==='PERSONAL_LIMPIEZA'?[]:Object.keys(events))){sourceStops.push(onSnapshot(collection(db,col),snap=>{events[col]=snap.docs.map(d=>({id:d.id,_collection:col,...d.data()}));draw()},e=>{error='No se pudo consultar '+col+': '+e.message;draw()}))}draw();unsubscribe=onSnapshot(collection(db,'microCleaningRecords'),snap=>{records=snap.docs.map(d=>({id:d.id,...d.data()}));loading=false;draw()},e=>{loading=false;error='No se pueden consultar registros: '+e.message+'. Publique las reglas Firestore incluidas en este ZIP.';draw()});}
+for(const col of (role==='PERSONAL_LIMPIEZA'?[]:Object.keys(events))){sourceStops.push(watchAlertQuery(collection(db,col),snap=>{events[col]=snap.docs.map(d=>({id:d.id,_collection:col,...d.data()}));draw()},e=>{error='No se pudo consultar '+col+': '+e.message;draw()}))}draw();unsubscribe=watchAlertQuery(collection(db,'microCleaningRecords'),snap=>{records=snap.docs.map(d=>({id:d.id,...d.data()}));loading=false;draw()},e=>{loading=false;error='No se pueden consultar registros: '+e.message+'. Publique las reglas Firestore incluidas en este ZIP.';draw()});}
