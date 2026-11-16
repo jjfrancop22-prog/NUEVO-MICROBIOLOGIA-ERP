@@ -7,7 +7,7 @@ service cloud.firestore {
     function admin() { return active() && get(profilePath()).data.role == 'ADMIN'; }
     match /users/{uid} {
       allow get: if signedIn() && (request.auth.uid == uid || admin());
-      allow list: if active();
+      allow list: if active() && get(profilePath()).data.role != 'PERSONAL_LIMPIEZA';
       allow create: if admin() && uid != request.auth.uid
         && request.resource.data.keys().hasOnly(['name','userCode','role','active','permissions','updatedAt','updatedBy','createdAt'])
         && request.resource.data.keys().hasAll(['name','userCode','role','active','permissions','updatedAt','updatedBy','createdAt'])
@@ -19,11 +19,12 @@ service cloud.firestore {
       function validProfile() {
         return request.resource.data.name is string && request.resource.data.name.size() <= 80
           && request.resource.data.userCode is string && request.resource.data.userCode.size() > 0 && request.resource.data.userCode.size() <= 20
-          && request.resource.data.role in ['ADMIN','JEFE','ANALISTA']
+          && request.resource.data.role in ['ADMIN','JEFE','ANALISTA','PERSONAL_LIMPIEZA']
           && request.resource.data.active is bool
           && request.resource.data.permissions is map
           && request.resource.data.permissions.keys().hasOnly(['samples','products','media','strains','quality','areas','equipment','communications','cleaning'])
           && request.resource.data.permissions.values().hasOnly(['READ','WRITE','NONE'])
+          && (request.resource.data.role != 'PERSONAL_LIMPIEZA' || (request.resource.data.permissions.keys().hasOnly(['cleaning']) && request.resource.data.permissions.get('cleaning','NONE') == 'WRITE'))
           && request.resource.data.updatedBy == request.auth.uid
           && request.resource.data.updatedAt == request.time;
       }
@@ -809,10 +810,10 @@ service cloud.firestore {
     // V1.0.364 - Limpieza: zona unificada y registros historicos inmutables.
     // El QR requiere autenticacion; no concede permisos por si mismo.
     function cleaningRead() {
-      return equipmentRead() || (active() && get(profilePath()).data.permissions.get('cleaning','NONE') in ['READ','WRITE']);
+      return (active() && get(profilePath()).data.role == 'PERSONAL_LIMPIEZA') || equipmentRead() || (active() && get(profilePath()).data.permissions.get('cleaning','NONE') in ['READ','WRITE']);
     }
     function cleaningWrite() {
-      return equipmentWrite() || (active() && get(profilePath()).data.permissions.get('cleaning','NONE') == 'WRITE');
+      return (active() && get(profilePath()).data.role == 'PERSONAL_LIMPIEZA' && get(profilePath()).data.permissions.get('cleaning','NONE') == 'WRITE') || equipmentWrite() || (active() && get(profilePath()).data.permissions.get('cleaning','NONE') == 'WRITE');
     }
     match /microCleaningRecords/{recordId} {
       allow get, list: if cleaningRead();
@@ -824,7 +825,7 @@ service cloud.firestore {
           'element','coveredElements','date','moment','agent','record','frequency',
           'notes','actorUid','actorCode','createdAt','time','historical','recordedAt'])
         && request.resource.data.element in ['area','floor','surface','des','est','freezer','sterilizer','incubator','fridge2','fridge','hood','balance','ph','turb']
-        && (equipmentWrite() || request.resource.data.element in ['area','floor','surface'])
+        && (equipmentWrite() || (active() && get(profilePath()).data.role == 'PERSONAL_LIMPIEZA' && get(profilePath()).data.permissions.get('cleaning','NONE') == 'WRITE') || request.resource.data.element in ['area','floor','surface'])
         && request.resource.data.date is string
         && request.resource.data.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
         && request.resource.data.date >= (request.resource.data.element == 'area' ? '2026-01-14' : '2026-01-01')

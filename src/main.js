@@ -192,6 +192,7 @@ function psiRefreshQcReactivations(){
  psiQcReactivationAlerts=alerts;drawNotifications();
 }
 function startAreaNotificationWatch(){
+ if(profile?.role==='PERSONAL_LIMPIEZA')return;
  psiAlertStops.forEach(f=>f());psiAlertStops=[];psiApprovalAlerts=[];psiAreaAlerts=[];psiMediaExpiryAlerts=[];psiMediaPreps=[];psiAnUses=[];psiAnUsesReady=false;psiMediaAlertError='';psiStrainAlerts=[];psiStrainError='';psiQcReactivationAlerts=[];psiAutoclaveAlerts=[];psiQcDaily=[];psiQcReactions=[];psiQcMedia=[];psiQcReady={daily:false,reactions:false,media:false};psiQcAlertError='';psiWeekAssignment=null;psiCleaningAlerts=[];psiCleaningAlertErrors=[];
  psiAlertStops.push(watchCleaningAlerts(db,(alerts,meta)=>{psiCleaningAlerts=alerts;psiCleaningAlertErrors=meta?.failed||[];drawNotifications();}));
  const isAdmin=profile.role==='ADMIN',week=psiWeekKey();
@@ -276,7 +277,8 @@ function startAreaNotificationWatch(){
  psiAlertStops.push(onSnapshot(doc(db,'monitoringAreaAssignments',week),snap=>{psiWeekAssignment=snap.exists()?snap.data():null;drawNotifications();},e=>{console.warn('Asignación semanal',e);psiWeekAssignment=null;drawNotifications();}));
 }
 function shell(){
- const nav=groups.map(([name,items])=>`<div class="nav-heading">${name}</div>${items.map(([id,icon,label])=>`<button class="nav-item ${id===selectedPage?'selected':''}" data-page="${id}" title="${label}"><span class="nav-icon">${icon}</span><span class="nav-label">${label}</span>${!['dashboard','samples','quality','products','media','strains','areas','equipment','cleaning','communications','admin'].includes(id)?'<span class="nav-tag">PRÓX.</span>':''}</button>`).join('')}`).join('');
+ const restricted=profile?.role==='PERSONAL_LIMPIEZA';
+ const nav=(restricted?[['LIMPIEZA',[['cleaning','🧹','Plan de limpieza']]]]:groups).map(([name,items])=>`<div class="nav-heading">${name}</div>${items.map(([id,icon,label])=>`<button class="nav-item ${id===selectedPage?'selected':''}" data-page="${id}" title="${label}"><span class="nav-icon">${icon}</span><span class="nav-label">${label}</span>${!['dashboard','samples','quality','products','media','strains','areas','equipment','cleaning','communications','admin'].includes(id)?'<span class="nav-tag">PRÓX.</span>':''}</button>`).join('')}`).join('');
  root.innerHTML=`<div class="layout" id="layout"><div class="backdrop" id="backdrop"></div><aside class="sidebar"><div class="brand"><span class="brand-logo">🧬</span><div class="brand-text"><div class="brand-title">LAB-PSI</div><small>MICROBIOLOGÍA NEXTGEN</small></div></div><nav class="nav-scroll">${nav}</nav><div class="sidebar-footer"><strong>MICROBIOLOGÍA NEXTGEN</strong><br>${APP_VERSION_LABEL} · Interfaz PSI 2027</div></aside><div class="workspace"><header class="topbar"><div class="top-left"><button class="icon-btn" id="menu-toggle" title="Expandir o contraer menú" aria-label="Alternar menú">☰</button><div class="top-title"><strong id="header-title">ERP Microbiología</strong><small>LAB-PSI · Entorno local de desarrollo</small></div></div><div class="top-right"><label class="density-control" title="Personalizar tamaño y espaciado de toda la interfaz"><span>⚙ Vista</span><select id="density-select" aria-label="Densidad visual"><option value="comfortable">Cómoda</option><option value="compact">Compacta</option><option value="dense">Máxima</option></select></label><div class="search-box">⌕ <input id="nav-search" placeholder="Buscar módulo..." aria-label="Buscar módulo" /></div><span class="pill" id="sync-indicator">● Motor listo</span><button id="bell" class="icon-btn" aria-label="Centro de notificaciones">🔔 <span id="bell-badge"></span></button><span class="avatar" title="${escapeHTML(profile.userCode||currentUser.email)}">${escapeHTML((profile.userCode||'U').slice(0,2))}</span><button id="logout" class="secondary logout">Salir</button></div></header><section class="content"><div id="notify-panel" class="card notify-panel" hidden><div class="notify-head"><h2>🔔 Comunicaciones · Avisos</h2><span class="pill" id="notify-live-state">Conectando</span></div><p id="notify-summary">Cargando bandeja...</p><div class="notify-filters"><select id="notify-filter" aria-label="Estado"><option value="unread">Sin leer</option><option value="pending">Por atender</option><option value="attended">Atendidas</option><option value="all">Todas</option></select><select id="notify-priority" aria-label="Prioridad"><option value="ALL">Todas las prioridades</option><option value="CRITICA">🔴 Crítica</option><option value="IMPORTANTE">🟠 Importante</option><option value="NORMAL">🟢 Normal</option></select><select id="notify-person" aria-label="Remitente"><option value="ALL">Todos los colaboradores</option></select><input id="notify-search" placeholder="Buscar comunicación…" aria-label="Buscar notificaciones" /></div><div id="area-notify-section" class="area-notify-section" hidden></div><div id="notify-items"></div><button id="open-communications">Abrir centro</button> <button class="secondary" id="close-notify">Cerrar</button></div><div class="psi-page-context" aria-label="Ubicación actual"><div class="psi-breadcrumb"><span>PSI NEXTGEN</span><span class="psi-separator">/</span><span id="psi-section">Principal</span><span class="psi-separator">/</span><strong id="psi-current">Panel general</strong></div><span class="psi-context-badge">● Plataforma operativa</span></div><div id="page-content"></div><div id="search-results" class="search-results" hidden></div></section></div></div>`;
  const densityKey='micro_visual_density_v126';
  const allowedDensity=['comfortable','compact','dense'];
@@ -292,6 +294,7 @@ function shell(){
  root.querySelector('#backdrop').onclick=()=>layout.classList.remove('mobile-open');
  root.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{if(b.dataset.page==='strains')sessionStorage.removeItem('micro_reactivation_context');showPage(b.dataset.page);});
  root.querySelector('#logout').onclick=()=>signOut(auth);
+ if(restricted){root.querySelector('#bell').hidden=true;root.querySelector('#nav-search').closest('.search-box').hidden=true;root.querySelector('#notify-panel').hidden=true;}
  if(stopStatus)stopStatus();
  stopStatus=sync.watchStatus(state=>{
    const indicator=root.querySelector('#sync-indicator');if(!indicator)return;
@@ -355,6 +358,7 @@ function drawNotifications(){
  items.innerHTML=commSnapshot.status==='error'?'<p class="muted notify-empty">No se pudo sincronizar. Compruebe la conexión y los permisos de Firebase.</p>':visible.length?visible.map(m=>`<button type="button" class="notify-row notify-action ${m.attendedAt?'is-attended':''}" data-open-peer="${escapeHTML(m.senderUid)}"><span class="notify-row-top"><span class="notify-severity ${escapeHTML(m.priority)}">${m.priority==='CRITICA'?'🔴':m.priority==='IMPORTANTE'?'🟠':'🟢'} ${escapeHTML(m.priority||'NORMAL')}</span><small>${m.attendedAt?'Atendida':m.readAt?'Leída · pendiente':'Nueva · pendiente'}</small></span><b>${escapeHTML(m.subject)}</b><small>De: ${escapeHTML(peers.get(m.senderUid)||'Usuario')}</small><p>${escapeHTML((m.body||'').slice(0,125))}</p><span class="notify-open">Abrir conversación →</span></button>`).join(''):'<p class="muted notify-empty">No hay comunicaciones para estos filtros.</p>';
 }
 function showPage(id){
+ if(profile?.role==='PERSONAL_LIMPIEZA'&&id!=='cleaning')id='cleaning';
  recoverModalScroll();
  // Restablecer bloqueo residual de ventanas de vistas anteriores.
  document.body.classList.remove('media-249-open-body','media-246-modal-open','qc236-modal-open','strain255-lock','strain258-lock');
@@ -409,10 +413,10 @@ onAuthStateChanged(auth,async user=>{
     const snap=await getDoc(doc(db,'users',user.uid));
     if(token!==sessionToken)return;
     const p=snap.data();
-    if(!snap.exists()||p.active!==true||!['ADMIN','JEFE','ANALISTA'].includes(p.role)){
+    if(!snap.exists()||p.active!==true||!['ADMIN','JEFE','ANALISTA','PERSONAL_LIMPIEZA'].includes(p.role)){
       await signOut(auth);login('Su cuenta está autenticada, pero no tiene un perfil activo autorizado. Solicite al administrador crear users/{UID}.');return;
     }
-    currentUser=user;profile=p;sync.setUser(user.uid);shell();resetIdle();
+    currentUser=user;profile=p;sync.setUser(user.uid);if(p.role==='PERSONAL_LIMPIEZA')selectedPage='cleaning';shell();resetIdle();if(p.role==='PERSONAL_LIMPIEZA')showPage('cleaning');
   }catch(err){if(token!==sessionToken)return;await signOut(auth);login(`No se pudo verificar el perfil (${err.code||'error'}). Revise reglas y conexión.`);}
 });
 login();
