@@ -1,0 +1,9 @@
+V1.0.381 - AUTORIZACIONES OPERATIVAS
+
+1. En Firebase Console > Firestore Database > Reglas, reemplazar el contenido por firestore.rules de este ZIP y pulsar PUBLICAR.
+2. Confirmar que Lizbeth tiene users/{uid}.active=true y role=ANALISTA.
+3. Reiniciar sesion, actualizar la pagina y probar reactivacion.
+4. Los controles especiales admin() permanecen restringidos; los campos y transiciones de inventario siguen validados.
+5. Si persiste permission-denied, revisar la operacion exacta con emulador de Firestore; no desactivar validaciones.
+
+El ZIP por si solo NO publica reglas en Firebase.

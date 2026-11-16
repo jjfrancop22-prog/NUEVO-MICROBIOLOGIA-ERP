@@ -1,9 +1,16 @@
-# LAB-PSI · Microbiología NEXTGEN V1.0.376
+# LAB-PSI · Microbiología NEXTGEN V1.0.381
 
-Versión única: `src/app-version.js` (interfaz), `public/version.json` (actualizaciones) y `public/sw.js` (caché).
+Proyecto listo para subir a la raíz de un repositorio GitHub.
 
-## Publicación GitHub / Netlify
-Subir el contenido de esta carpeta a la raíz del repositorio. Netlify: `npm run build`, publicación `dist`.
-No subir `node_modules`, `dist` ni archivos `.env`. Las reglas `firestore.rules` se conservan sin cambios.
+## Publicación
+- Ejecutar `npm install` y `npm run build`.
+- Netlify: comando `npm run build`; directorio de publicación `dist`.
+- No subir `node_modules/`, `dist/` ni archivos `.env`.
+- Las reglas de Firestore se encuentran en `firestore.rules` y deben publicarse por separado en Firebase Console. Subirlas a GitHub no las activa.
+- Consultar `GUIA_FIREBASE_V381.txt` antes de publicar las reglas.
 
-Esta versión compacta parte de V1.0.375. No elimina archivos de código ni estilos utilizados por la aplicación.
+## Versión
+- Versión del paquete: 1.0.381.
+- Archivos de versión: `src/app-version.js`, `public/version.json` y `public/sw.js`.
+
+Este paquete conserva el código, estilos y recursos del ZIP recibido. No se ha comprobado la compilación ni el funcionamiento en Firebase.

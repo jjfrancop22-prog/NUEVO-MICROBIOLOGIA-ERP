@@ -65,15 +65,12 @@ service cloud.firestore {
         && (request.resource.data.attendedAt == resource.data.attendedAt || (resource.data.attendedAt == null && request.resource.data.attendedAt == request.time));
       allow delete: if false;
     }
+    // V1.0.381: acceso operativo para usuarios activos ADMIN/JEFE/ANALISTA.
+    // PERSONAL_LIMPIEZA permanece limitado a limpieza.
+    function operationalUser() { return active() && get(profilePath()).data.role in ['ADMIN','JEFE','ANALISTA']; }
     // V1.0.12: permisos para recepcion, ingreso oficial, duplicados y borradores.
-    function sampleRead() {
-      return active() && (get(profilePath()).data.role in ['ADMIN','JEFE']
-        || get(profilePath()).data.permissions.get('samples', 'NONE') in ['READ','WRITE']);
-    }
-    function sampleWrite() {
-      return active() && (get(profilePath()).data.role in ['ADMIN','JEFE']
-        || get(profilePath()).data.permissions.get('samples', 'NONE') == 'WRITE');
-    }
+    function sampleRead() { return operationalUser(); }
+    function sampleWrite() { return operationalUser(); }
     function validSampleCreate(sampleId) {
       return request.resource.data.keys().hasOnly([
         'code','type','parameters','receivedDate','sampleTime','sampledBy','receivedTime',
@@ -190,8 +187,8 @@ service cloud.firestore {
       allow delete: if false;
     }
     // V1.0.354 Control de autoclaves: registros inmutables, sin borrado.
-    function equipmentRead() { return active() && (get(profilePath()).data.role in ['ADMIN','JEFE'] || get(profilePath()).data.permissions.get('equipment','NONE') in ['READ','WRITE']); }
-    function equipmentWrite() { return active() && (get(profilePath()).data.role in ['ADMIN','JEFE'] || get(profilePath()).data.permissions.get('equipment','NONE') == 'WRITE'); }
+    function equipmentRead() { return operationalUser(); }
+    function equipmentWrite() { return operationalUser(); }
     match /microAutoclaveCycles/{id} {
       allow read: if equipmentRead();
       allow create: if equipmentWrite()
@@ -207,8 +204,8 @@ service cloud.firestore {
       allow update, delete: if false;
     }
     // V1.0.25 Productos y lotes. Las transacciones actualizan saldo y generan un movimiento inmutable.
-    function productRead() { return active() && (get(profilePath()).data.role in ['ADMIN','JEFE'] || get(profilePath()).data.permissions.get('products','NONE') in ['READ','WRITE']); }
-    function productWrite() { return active() && (get(profilePath()).data.role in ['ADMIN','JEFE'] || get(profilePath()).data.permissions.get('products','NONE') == 'WRITE'); }
+    function productRead() { return operationalUser(); }
+    function productWrite() { return operationalUser(); }
     match /microProducts/{id} {
       allow read: if productRead();
       allow create, update: if productWrite() && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 120 && request.resource.data.type is string && request.resource.data.updatedBy == request.auth.uid;
@@ -305,11 +302,11 @@ service cloud.firestore {
       allow update, delete: if false;
     }
     // V1.0.35 Medios preparados: secuencia por formulación y año, y liberación controlada.
-    function mediaRead() { return active() && (get(profilePath()).data.role in ['ADMIN','JEFE'] || get(profilePath()).data.permissions.get('media','NONE') in ['READ','WRITE']); }
-    function mediaWrite() { return active() && productWrite() && (get(profilePath()).data.role in ['ADMIN','JEFE'] || get(profilePath()).data.permissions.get('media','NONE') == 'WRITE'); }
+    function mediaRead() { return operationalUser(); }
+    function mediaWrite() { return operationalUser(); }
     // V1.0.54: cepas; escrituras restringidas por rol y sin eliminación.
-    function strainsRead() { return active() && (get(profilePath()).data.role in ['ADMIN','JEFE'] || get(profilePath()).data.permissions.get('strains','NONE') in ['READ','WRITE'] || mediaRead()); }
-    function strainsWrite() { return active() && (get(profilePath()).data.role in ['ADMIN','JEFE'] || get(profilePath()).data.permissions.get('strains','NONE') == 'WRITE'); }
+    function strainsRead() { return operationalUser(); }
+    function strainsWrite() { return operationalUser(); }
     match /microStrainDisposals/{id} {
       allow read: if strainsRead();
       allow create: if strainsWrite() && request.resource.data.keys().hasOnly(['preparationId','preparationCode','atcc','species','quantity','reason','notes','date','actorUid','actorCode','createdAt'])
@@ -632,14 +629,8 @@ service cloud.firestore {
       allow delete: if false;
     }
     // V1.0.303: Catálogo de áreas y auditoría obligatoria (transacción atómica).
-    function areasRead() {
-      return active() && (get(profilePath()).data.role == 'ADMIN'
-        || get(profilePath()).data.permissions.get('areas','NONE') in ['READ','WRITE']);
-    }
-    function areasWrite() {
-      return active() && (get(profilePath()).data.role == 'ADMIN'
-        || get(profilePath()).data.permissions.get('areas','NONE') == 'WRITE');
-    }
+    function areasRead() { return operationalUser(); }
+    function areasWrite() { return operationalUser(); }
     function areaFields() {
       return ['id','frequency','code','name','type','criticality','frequencyDays','medium','microorganism',
         'method','exposureMinutes','plateDiameterMm','swabAreaCm2','limitTarget',
