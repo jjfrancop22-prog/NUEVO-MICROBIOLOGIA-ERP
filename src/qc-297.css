@@ -1,0 +1,13 @@
+/* V1.0.297: presentación compacta, sin alterar el cálculo QC */
+.qc297-disclosure[open] .qc297-detail{padding:12px 0 2px}.qc297-note{font-size:12px;line-height:1.5;color:#526e84;margin:0 0 10px}.qc297-table-wrap{overflow-x:auto;border:1px solid #d6e6f3;border-radius:12px;background:#fff}.qc297-table{width:100%;border-collapse:collapse;font-size:12px;min-width:390px}.qc297-table th{background:#edf6fc;text-align:left;color:#245779;font-size:11px;padding:10px 9px}.qc297-table td{padding:10px 9px;border-top:1px solid #e6eff6;color:#234b6c;vertical-align:middle}.qc297-table tbody tr:hover{background:#f5faff}.qc297-state{display:inline-block;border-radius:20px;background:#fff4dc;color:#805916;padding:5px 8px;font-size:11px;white-space:normal}.qc297-open{background:#e8f4fc!important;color:#126393!important;border:1px solid #c8e3f5!important;border-radius:8px!important;padding:7px 9px!important;font-size:11px!important;font-weight:700!important;white-space:nowrap}.qc297-open:hover{background:#d7edfa!important}.qc150-card .qc297-disclosure{margin-top:10px}.qc150-card .qc297-detail .qc150-muted{font-size:12px}
+
+/* V1.0.298: Q3 compacto en tarjetas estrechas; el botón principal abre la primera jornada. */
+.qc150-card .qc297-table-wrap{overflow-x:visible;max-width:100%}
+.qc150-card .qc297-table{min-width:0;width:100%;table-layout:fixed;font-size:11px}
+.qc150-card .qc297-table th,.qc150-card .qc297-table td{padding:8px 5px;overflow-wrap:anywhere;word-break:normal}
+.qc150-card .qc297-table th:nth-child(1){width:24%}
+.qc150-card .qc297-table th:nth-child(2){width:25%}
+.qc150-card .qc297-table th:nth-child(3){width:29%}
+.qc150-card .qc297-table th:nth-child(4){width:22%}
+.qc150-card .qc297-open{padding:7px 5px!important;white-space:normal;max-width:100%;font-size:11px!important}
+.qc150-card .qc297-note{font-size:11px;line-height:1.4}

@@ -5,7 +5,7 @@ export function enhanceMedia246(root, currentView) {
   const title=root.querySelector('h1');
   if(title) title.textContent='Control de medios preparados';
   const eyebrow=root.querySelector('.eyebrow');
-  if(eyebrow) eyebrow.textContent='RECURSOS MICROBIOLÓGICOS · V1.0.247';
+  if(eyebrow) eyebrow.textContent='RECURSOS MICROBIOLÓGICOS';
   const tabs=root.querySelector('.product-tabs');
   if(tabs) tabs.setAttribute('aria-label','Etapas de medios de cultivo');
   root.querySelectorAll('[data-media-tab]').forEach(btn=>btn.setAttribute('aria-pressed',String(btn.classList.contains('active'))));

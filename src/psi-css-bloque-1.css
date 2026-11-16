@@ -1,0 +1,91 @@
+/* Consolidación sin alterar reglas ni su orden original. */
+
+/* ORIGEN: login-294.css */
+/* V1.0.294 · Refinamiento del acceso institucional. Sin cambios de autenticación. */
+.psi-login-page{background:radial-gradient(ellipse at 15% 18%,#2276a65e,transparent 42%),linear-gradient(130deg,#071f3c,#123d68 65%,#185b8b)!important}
+.psi-login-shell{max-width:1020px;min-height:570px;border:1px solid #9bc9e4;border-radius:20px;box-shadow:0 30px 90px #04172c8a}
+.psi-login-intro{background:linear-gradient(150deg,#0e335c,#166da3 75%,#2198c8)!important}
+.psi-login-intro-body{padding:15px 0}.psi-login-intro h1{font-weight:850;letter-spacing:-1.6px}
+.psi-login-panel{background:linear-gradient(165deg,#fff,#f5faff);padding:32px 42px 25px}
+.psi-login-version{background:#e3f2fc;border:1px solid #bbdef3;color:#115e8e;padding:9px 15px}
+.psi-login-secure{background:#e8f6f1;color:#137457}
+.psi-login-submit{background:linear-gradient(110deg,#14578f,#178ec2)!important}
+.psi-login-footer{font-size:12px}.psi-login-footer strong{font-weight:800}
+@media(max-width:760px){.psi-login-shell{min-height:calc(100dvh - 24px)}.psi-login-panel{padding:24px 20px}}
+
+
+/* ORIGEN: login-331.css */
+/* V1.0.331 · Acceso institucional PSI */
+.psi-login-intro-foot{font-size:12px!important;letter-spacing:.035em!important;color:#e4f4ff!important;font-weight:650!important}
+.psi-login-panel-top{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important}
+.psi-login-build{border:1px solid #d5e8f3;border-radius:999px;padding:7px 12px;background:#f2f8fc;color:#1b577c;font-size:11px;font-weight:800;letter-spacing:.05em;white-space:nowrap}
+.psi-login-version{color:#2b658a!important;font-weight:750!important;white-space:nowrap}
+.psi-login-footer{gap:12px;flex-wrap:wrap;align-items:center}
+.psi-login-submit{transition:filter .2s,transform .2s,box-shadow .2s}
+.psi-login-submit:hover:not(:disabled){filter:brightness(1.07);transform:translateY(-1px);box-shadow:0 8px 22px #126caa36}
+.psi-login-form input:focus-visible,.psi-login-password button:focus-visible,.psi-login-submit:focus-visible{outline:3px solid #62b9e8;outline-offset:2px}
+@media(max-width:760px){.psi-login-footer{justify-content:center!important;text-align:center}.psi-login-panel-top{flex-wrap:wrap}}
+
+
+/* ORIGEN: communications-289.css */
+/* PSI NEXTGEN · Comunicaciones unificadas · V1.0.289 */
+.comm-page-heading{background:linear-gradient(115deg,#fff,#eef7ff);border:1px solid #d3e6f5;border-left:4px solid #258ec6;border-radius:15px;padding:18px 22px;margin:0 0 14px!important;box-shadow:0 7px 24px #153e5a0a}
+.comm-page-heading .eyebrow{color:#217da9;font-size:11px;letter-spacing:.13em;font-weight:800}.comm-page-heading h1{font-size:25px!important;color:#153d63;margin:4px 0!important}.comm-page-heading .intro{color:#607c92;font-size:12px}.comm-page-heading .pill{background:#e5f6ed!important;color:#136e52!important;border:1px solid #c7e9d7}
+.comm-pro{max-width:none!important}.chat-layout{border:1px solid #cbdff0!important;border-top:3px solid #2d96cb!important;border-radius:16px!important;box-shadow:0 10px 28px #163e5b12!important;grid-template-columns:260px minmax(0,1fr)!important;height:min(72vh,735px)!important;min-height:540px!important}
+.chat-contacts{background:#f5faff!important;border-right:1px solid #dceaf5!important}.chat-panel-head{padding:17px 16px 12px!important}.chat-panel-head strong{color:#153d63!important;font-size:16px!important}.chat-panel-head small,.chat-thread-head small{color:#6b8499!important}.chat-dot{color:#248bbd!important}.chat-find{margin:0 12px 12px!important;padding:10px!important;border-color:#cfe2f1!important;outline-color:#268ec5!important}
+.chat-person{padding:11px 13px!important;color:#224a6b!important;border-bottom-color:#e3eef7!important;gap:9px!important}.chat-person:hover{background:#e9f5fd!important}.chat-person.active{background:#e0f0fb!important;border-left:3px solid #258fc7!important;padding-left:10px!important}.chat-avatar{width:35px!important;height:35px!important;background:#d8ebf9!important;color:#17638e!important}.chat-person-name small{color:#7890a4!important}.chat-unread{background:#147eae!important}
+.chat-thread{background:#f6faff!important}.chat-thread-head{min-height:65px!important;padding:12px 18px!important;border-bottom-color:#dce9f3!important}.chat-thread-head strong{color:#153d63!important}.chat-thread-head select{border-color:#cddfeb!important;color:#244c69!important}.chat-scroll{padding:18px!important;gap:12px!important}.chat-bubble{border-color:#d9e7f2!important;box-shadow:0 2px 8px #173e5b0b!important;padding:12px 14px!important}.chat-bubble.mine{background:#e1f1fc!important;border-color:#c4e2f5!important}.chat-bubble p{color:#27475f!important}.chat-bubble-foot{color:#68849a!important}.chat-actions button{background:#e6f3fc!important;color:#166b9a!important}
+.chat-composer{padding:12px 16px!important;border-top-color:#dce9f3!important}.chat-compose-top,.chat-compose-bottom{margin-bottom:7px!important}.chat-composer input,.chat-composer select,.chat-composer textarea{border-color:#d0e2f0!important;color:#244a68!important;background:#fbfdff!important}.chat-compose-bottom button{background:#197faf!important;border-radius:9px!important}.chat-composer small{color:#69849b!important}.chat-placeholder{color:#6f8ca1!important}.notify-panel{border-top:3px solid #258fc7!important}
+@media(max-width:850px){.chat-layout{grid-template-columns:205px minmax(0,1fr)!important}}@media(max-width:650px){.chat-layout{grid-template-columns:1fr!important;height:auto!important}.chat-contacts{max-height:215px!important}.chat-thread{min-height:480px!important}}
+/* V1.0.290 · conversación continua y redacción compacta */
+.chat-thread-head{border-bottom:1px solid #d6e8f4}
+.chat-bubble{max-width:min(76%,650px);border-radius:15px;padding:12px 16px;box-shadow:0 2px 8px #10395a0c}
+.chat-bubble.mine{margin-left:auto;background:#e4f2ff;border:1px solid #bcdcf2}
+.chat-bubble.theirs{margin-right:auto;background:#fff;border:1px solid #d6e5ed}
+.chat-bubble p{white-space:pre-wrap;overflow-wrap:anywhere}
+.chat-person{transition:background .12s ease}
+.chat-person:focus-visible,.chat-composer button:focus-visible{outline:2px solid #1687c6;outline-offset:2px}
+@media(max-width:760px){.chat-bubble{max-width:94%}}
+
+
+/* ORIGEN: psi-visual-284.css */
+
+/* V1.0.286 · ELISA/ELICROM | Archivo QC compacto y accesible */
+.qc239-archive{background:#fff;border:1px solid #d6e6f2;border-top:4px solid #238ec8;border-radius:18px;box-shadow:0 8px 28px #123d6410;padding:clamp(16px,2vw,26px);margin-block:22px}
+.qc239-heading{padding-bottom:15px;border-bottom:1px solid #e0edf6}.qc239-heading h2{font-size:clamp(19px,1.6vw,24px);letter-spacing:-.025em}.qc239-heading p{margin:5px 0 0;line-height:1.45}.qc239-load{font-weight:750;box-shadow:0 4px 10px #197db725}
+.qc240-dashboard{margin:18px 0 14px;padding:18px;border:1px solid #d1e7f5;border-radius:15px;background:linear-gradient(135deg,#f1f9fe,#fff 65%)}
+.qc240-heading{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}.qc240-heading small{color:#187eb6;font-weight:800;letter-spacing:.06em}.qc240-heading h3{font-size:19px;color:#163d64;margin:5px 0}.qc240-heading p{color:#5a7489;font-size:12px;margin:0}.qc240-scope{background:#e1f1fb;color:#155a88;padding:8px 12px;border-radius:30px;font-size:12px;font-weight:700}
+.qc240-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:16px}.qc240-metric{border:1px solid #d5e7f4;border-radius:12px;background:#fff;padding:13px 15px;min-width:0}.qc240-metric small{display:block;color:#587791;font-size:12px}.qc240-metric strong{display:block;color:#165486;font-size:clamp(20px,2vw,27px);margin-top:6px;font-variant-numeric:tabular-nums}
+.qc240-charts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:11px}.qc240-chart,.qc240-monthly{background:#fff;border:1px solid #d5e7f4;border-radius:12px;padding:14px;min-width:0}.qc240-charttitle{display:flex;justify-content:space-between;gap:8px;color:#194b73}.qc240-charttitle span{font-size:12px;text-align:right}.qc240-bar{height:8px;border-radius:8px;background:#e3edf5;overflow:hidden;margin:12px 0}.qc240-bar span{display:block;height:100%;background:linear-gradient(90deg,#167eb5,#53b6e2);border-radius:8px}.qc240-chart>small{color:#617d90;line-height:1.5}.qc240-monthly{grid-column:1/-1}.qc240-monthly h4{margin:0 0 12px;color:#194b73}.qc240-months{display:flex;align-items:end;gap:16px;min-height:92px;overflow-x:auto}.qc240-months>div{display:grid;gap:4px;text-align:center;min-width:55px;color:#235f89}.qc240-monthbar{height:55px;width:28px;background:#e4f0f8;border-radius:5px;display:flex;align-items:end;margin:auto;overflow:hidden}.qc240-monthbar span{width:100%;background:#2c98ce;border-radius:4px}.qc240-footnote{font-size:11px;color:#6a8194;line-height:1.5;margin:12px 0 0}
+.qc239-controls{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:10px;margin:18px 0 12px}.qc239-controls label{font-weight:650;min-width:0}.qc239-controls input,.qc239-controls select{width:100%;box-sizing:border-box;background:#fff;min-width:0}.qc239-status{background:#eff7fc;border-radius:9px;padding:10px 12px;font-size:12px}.qc239-archive .sample-table-wrap{overflow-x:auto;border:1px solid #daeaf5;border-radius:12px}.qc239-archive .sample-table{width:100%;min-width:670px}.qc239-archive .sample-table thead{background:#e6f2fa}.qc239-footer{padding-top:8px}.qc239-page{font-weight:700;color:#245578}.qc239-note{margin:12px 0 0;line-height:1.5}
+@media(max-width:1100px){.qc239-controls{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:760px){.qc240-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.qc240-charts{grid-template-columns:1fr}.qc239-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.qc239-heading{align-items:flex-start}}@media(max-width:460px){.qc239-controls{grid-template-columns:1fr}.qc240-metrics{grid-template-columns:1fr 1fr}.qc240-metric{padding:10px}.qc240-scope{width:100%}}
+
+
+/* ORIGEN: psi-visual-285.css */
+/* PSI · ELISA/ELICROM · Histórico como herramienta secundaria */
+#qc239-archive.qc239-archive{border:1px solid #c9deed;border-top:3px solid #1684bf;border-radius:18px;background:#fff;box-shadow:0 10px 30px rgba(18,65,105,.07);padding:22px 24px;margin-top:24px}
+#qc239-archive .qc239-heading{display:flex;align-items:center;gap:16px;justify-content:space-between;flex-wrap:wrap;margin:0}
+#qc239-archive .qc239-heading h2{font-size:19px;letter-spacing:-.03em;margin:4px 0;color:#153b60}
+#qc239-archive .qc239-heading p{font-size:13px;color:#607b90;margin:4px 0 0}
+#qc239-archive .qc239-heading small{font-size:10px;letter-spacing:.1em;color:#2782b4;font-weight:800}
+#qc239-archive .qc285-toggle{margin-left:auto;background:#eaf5fc;color:#125b89;border:1px solid #c6e2f4;border-radius:10px;font-weight:750;padding:11px 16px;cursor:pointer}
+#qc239-archive .qc285-body[hidden],#qc239-archive .qc240-dashboard[hidden]{display:none!important}
+#qc239-archive .qc285-body{padding-top:18px;margin-top:16px;border-top:1px solid #e3edf5}
+#qc239-archive .qc239-controls{display:grid;grid-template-columns:repeat(6,minmax(125px,1fr));gap:10px;align-items:end;margin:16px 0 12px}
+#qc239-archive .qc239-controls label{font-size:11px;font-weight:750;color:#315a7a;min-width:0}
+#qc239-archive .qc239-controls input,#qc239-archive .qc239-controls select{height:39px;width:100%;min-width:0;border:1px solid #cfe1ee;border-radius:9px;background:#f8fbfe;padding:7px 9px;font-size:12px;box-sizing:border-box}
+#qc239-archive .qc239-load{border-radius:10px;padding:11px 15px;background:#157cb5;color:#fff;font-weight:750;box-shadow:none}
+#qc239-archive .qc240-dashboard{padding:16px;margin:14px 0;background:#f5faff;border:1px solid #d9e8f3;box-shadow:none}
+#qc239-archive .qc240-metrics{gap:9px;margin:12px 0}
+#qc239-archive .qc240-metric{padding:11px 13px}
+#qc239-archive .qc240-chart{padding:12px}
+#qc239-archive .qc239-status{font-size:12px;color:#476b84;background:#f0f7fc;padding:9px 12px;border-radius:9px}
+#qc239-archive .sample-table-wrap{border:1px solid #d7e7f2;border-radius:11px;overflow:auto}
+#qc239-archive .qc239-footer{display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:12px 0}
+#qc239-archive .qc239-note{font-size:11px;color:#698296;margin:0}
+@media(max-width:1150px){#qc239-archive .qc239-controls{grid-template-columns:repeat(3,minmax(130px,1fr))}}
+@media(max-width:680px){#qc239-archive.qc239-archive{padding:15px}#qc239-archive .qc239-controls{grid-template-columns:repeat(2,minmax(0,1fr))}#qc239-archive .qc285-toggle{margin-left:0;width:100%}}
+
+
+/* ORIGEN: psi-qc-279.css */
+.qc279-journal-button{width:100%;border:0;border-bottom:1px solid #d7e6f2;background:transparent;color:#194a73;text-align:left;cursor:pointer;padding:10px 4px;display:flex;justify-content:space-between;align-items:center;font:inherit}.qc279-journal-button:hover,.qc279-journal-button:focus-visible{background:#e8f4ff;outline:2px solid #2589ca;outline-offset:-2px}.qc279-media-hint{padding:10px 12px;margin:8px 0 14px;border-radius:9px;background:#eaf5ff;border-left:3px solid #2389ca;color:#164d76;font-size:.91rem;font-weight:600}

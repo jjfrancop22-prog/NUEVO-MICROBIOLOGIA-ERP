@@ -1,0 +1,50 @@
+/* Consolidación sin alterar reglas ni su orden original. */
+
+/* ORIGEN: login-274.css */
+/* LAB-PSI · Login institucional V1.0.274 — no altera autenticación Firebase */
+.psi-login-page{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:clamp(16px,3vw,44px);background:radial-gradient(circle at 8% 10%,#2379a2 0%,transparent 30%),linear-gradient(135deg,#0c2749,#123e69 55%,#e8f3fb 160%);font-family:Inter,system-ui,sans-serif;color:#173b60}
+.psi-login-shell{display:grid;grid-template-columns:minmax(320px,.94fr) minmax(360px,1fr);width:min(1080px,100%);min-height:620px;background:#fff;border:1px solid #c4dced;border-radius:24px;overflow:hidden;box-shadow:0 30px 85px #051a3570}
+.psi-login-intro{background:linear-gradient(155deg,#153f6d 0%,#1e76ab 100%);color:white;padding:38px 42px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.psi-login-intro:after{content:'';position:absolute;width:380px;height:380px;border:1px solid #ffffff25;border-radius:50%;right:-220px;bottom:0;pointer-events:none}
+.psi-login-mark{display:flex;align-items:center;gap:15px;position:relative;z-index:1}.psi-login-mark img{width:98px;height:75px;object-fit:contain;background:#fff;border-radius:12px;padding:6px}.psi-login-mark span{font-size:11px;letter-spacing:1.3px;font-weight:750;line-height:1.7;max-width:210px;color:#e4f2ff}
+.psi-login-intro-body{position:relative;z-index:1;padding:30px 0}.psi-login-kicker,.psi-login-eyebrow{font-size:11px;font-weight:850;letter-spacing:2px;color:#aee4ff}.psi-login-intro h1{font-size:clamp(36px,4vw,54px);line-height:1.08;letter-spacing:-1.8px;margin:20px 0}.psi-login-intro h1 em{font-style:normal;color:#d2f3ff}.psi-login-intro-body>p{font-size:15px;line-height:1.8;color:#e3f1fb;max-width:400px;margin-bottom:27px}.psi-login-feature{font-size:13px;line-height:1.6;display:flex;gap:10px;align-items:flex-start;margin:12px 0;color:#f1faff}.psi-login-feature span{display:inline-grid;place-items:center;border-radius:50%;background:#ffffff24;width:23px;height:23px;flex:none}.psi-login-intro-foot{font-size:11px;letter-spacing:.5px;color:#d4e9f9}
+.psi-login-panel{display:flex;flex-direction:column;justify-content:space-between;padding:30px 43px 24px;min-width:0}.psi-login-panel-top{display:flex;justify-content:space-between;align-items:center;gap:12px}.psi-login-secure{font-size:10px;letter-spacing:1px;color:#126b5d;background:#e6f6f0;padding:9px 12px;border-radius:40px;font-weight:850}.psi-login-version{font-size:12px;font-weight:800;color:#437295;background:#eef6fb;padding:8px 12px;border-radius:30px}
+.psi-login-form-wrap{width:100%;max-width:420px;margin:30px auto}.psi-login-mobile-brand{display:none}.psi-login-eyebrow{color:#2686b8}.psi-login-form-wrap h2{font-size:33px;letter-spacing:-1px;color:#153c63;margin:10px 0}.psi-login-subtitle{color:#6c8193;font-size:14px;line-height:1.7;margin:0 0 28px}.psi-login-form{display:flex;flex-direction:column;gap:10px}.psi-login-form label{font-size:13px;font-weight:750;color:#214568;margin-top:8px}.psi-login-form>input,.psi-login-password input{width:100%;min-height:49px;border:1px solid #c6d9e9;border-radius:10px;background:#f9fcff;color:#143a5d;padding:12px 14px;outline:none;font-size:14px}.psi-login-form input:focus{border-color:#228bc6;box-shadow:0 0 0 3px #238ac51c}.psi-login-password{position:relative}.psi-login-password input{padding-right:88px}.psi-login-password button{position:absolute;right:5px;top:5px;height:39px;background:transparent!important;color:#286b99!important;padding:0 11px;font-size:12px;border-radius:8px}.psi-login-submit{margin-top:17px;min-height:51px;display:flex;justify-content:space-between;align-items:center;width:100%;padding:0 18px!important;background:linear-gradient(100deg,#155a95,#1f91c6)!important;color:#fff!important;border-radius:10px;font-size:14px;font-weight:800;box-shadow:0 8px 22px #1479b52c}.psi-login-submit:hover{filter:brightness(1.06)}.psi-login-submit:disabled{opacity:.7;cursor:wait}.psi-login-message{min-height:20px;color:#b63a3a;font-size:12px;line-height:1.5;margin:7px 0 0}.psi-login-help{text-align:center;color:#7b91a1;font-size:12px;margin-top:19px}.psi-login-footer{border-top:1px solid #e5eef6;padding-top:18px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;color:#8294a6;font-size:11px}.psi-login-footer strong{color:#255c86}
+@media(max-width:760px){.psi-login-page{padding:12px;align-items:start}.psi-login-shell{display:block;min-height:calc(100dvh - 24px)}.psi-login-intro{display:none}.psi-login-panel{min-height:calc(100dvh - 24px);padding:25px 22px}.psi-login-mobile-brand{display:flex;align-items:center;gap:12px;margin-bottom:28px;color:#17496c}.psi-login-mobile-brand img{width:70px;height:60px;object-fit:contain}.psi-login-form-wrap{margin:40px auto}.psi-login-form-wrap h2{font-size:29px}}
+
+
+/* ORIGEN: login-stable-279.css */
+/* Refinamiento exclusivamente visual del acceso; no altera Firebase ni lógica operativa. */
+.psi-login-page{background:radial-gradient(ellipse at 82% 12%,#2a84b05e,transparent 42%),radial-gradient(ellipse at 5% 95%,#18588b,transparent 42%),linear-gradient(140deg,#091d37,#10406a 65%,#0b294a)!important}
+.psi-login-shell{border-radius:26px!important;box-shadow:0 34px 95px #06172b8c!important;border:1px solid #a9d4ee7d!important}
+.psi-login-intro{background:linear-gradient(155deg,#123b65,#1879ad 82%,#258dc2)!important}
+.psi-login-intro:before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 85% 18%,#ffffff20,transparent 36%);pointer-events:none}
+.psi-login-mark img{width:116px!important;height:91px!important;padding:10px!important;background:#fff!important;box-shadow:0 10px 25px #092b4652}
+.psi-login-intro h1{font-weight:850;letter-spacing:-1.5px!important}
+.psi-login-feature{border:1px solid #ffffff22;background:#ffffff0d;border-radius:11px;padding:10px 13px;margin:9px 0!important}
+.psi-login-panel{background:linear-gradient(180deg,#fff,#f8fcff)!important}
+.psi-login-version{background:#e7f4ff!important;color:#155785!important;border:1px solid #c9e4f7}
+.psi-login-form-wrap{max-width:405px!important}
+.psi-login-form>input,.psi-login-password input{background:#fff!important;transition:border-color .18s,box-shadow .18s}
+.psi-login-submit{background:linear-gradient(105deg,#145a93,#188fc0)!important;box-shadow:0 10px 24px #0d79b52e!important}
+.psi-login-footer{font-size:12px!important}
+.psi-login-footer strong{font-weight:850!important}
+@media(max-width:760px){.psi-login-mobile-brand img{width:92px!important;height:75px!important;background:#fff;padding:5px;border-radius:12px}.psi-login-panel{padding:24px!important}}
+
+
+/* ORIGEN: strains-266.css */
+.strain266-no-stock{padding:12px 14px;margin:10px 0 0;border:1px solid #f0c2b8;border-radius:10px;background:#fff1ed;color:#96382c;font-weight:600}.qc-planner-warning button[data-qc-go="strains"]{background:#176da6!important;color:#fff!important;border-color:#176da6!important}
+
+
+/* ORIGEN: strains-265.css */
+.strain265-context-alert{margin:12px 0 18px;padding:14px 18px;border:1px solid #f0c5ae;border-left:4px solid #c67a2a;background:#fff7ed;color:#75441f;border-radius:10px;font-weight:600;line-height:1.5}
+.media-reactivation-alert strong{color:#174d7c}
+
+
+/* ORIGEN: media-qc-direct-264.css */
+.media-qc-direct-backdrop{position:fixed;inset:0;z-index:10050;background:rgba(9,34,65,.67);display:flex;align-items:center;justify-content:center;padding:22px}.media-qc-direct-dialog{width:min(1120px,96vw);max-height:94vh;display:flex;flex-direction:column;overflow:hidden;background:#fff;border-radius:19px;box-shadow:0 24px 85px #091e3670}.media-qc-direct-header{background:linear-gradient(110deg,#17436f,#2389bf);color:#fff;display:flex;justify-content:space-between;align-items:center;padding:24px 30px}.media-qc-direct-header small{letter-spacing:.13em;font-weight:700}.media-qc-direct-header h2{color:#fff!important;margin:5px 0;font-size:27px}.media-qc-direct-header p{margin:0;color:#e6f4ff}.media-qc-direct-close{background:#ffffff20!important;border:1px solid #ffffff70!important;color:#fff!important;font-size:29px;line-height:1;padding:5px 13px;border-radius:10px}.media-qc-direct-content{overflow:auto;padding:25px 30px;flex:1;background:#f8fbff}.media-qc-direct-content .qc-evaluation{margin:0;max-width:none}.media-qc-direct-footer{border-top:1px solid #d9e7f3;padding:14px 30px;display:flex;justify-content:flex-end;background:#fff}.media-qc-direct-cancel{background:#e9f2f9!important;color:#17436f!important}.media-qc-direct-content .qc-pro-section{border-radius:12px}.media-qc-direct-content button[type=submit]{background:#176ba7!important;color:white!important}@media(max-width:720px){.media-qc-direct-backdrop{padding:6px}.media-qc-direct-dialog{max-height:98vh;width:100%}.media-qc-direct-content{padding:12px}.media-qc-direct-header{padding:17px}}
+
+
+/* ORIGEN: media-draft-261.css */
+.media-261-draft{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:16px 18px;margin:0 0 16px;border:1px solid #bedcf2;border-left:4px solid #258fce;border-radius:12px;background:#edf6fe;color:#163e66}.media-261-draft strong{display:block;font-size:15px}.media-261-draft small{display:block;margin-top:5px;color:#53728d}.media-261-actions{display:flex;gap:9px;flex-wrap:wrap}.media-261-actions button{border:0;border-radius:9px;background:#176aa4;color:white;padding:10px 15px;font-weight:700;cursor:pointer}.media-261-actions .media-261-secondary{background:#fff;color:#1b5d89;border:1px solid #bfd9eb}.media-261-actions button:disabled{opacity:.5;cursor:not-allowed}
+

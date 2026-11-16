@@ -6,7 +6,7 @@ const item=(label,value)=>`<div class="media-248-item"><span>${escapeHtml(label)
 export function enhanceMedia248(root,view,preparations){
  if(!root)return;
  root.classList.add('media-pro-248');
- const eyebrow=root.querySelector('.eyebrow');if(eyebrow)eyebrow.textContent='RECURSOS MICROBIOLÓGICOS · V1.0.255';
+ const eyebrow=root.querySelector('.eyebrow');if(eyebrow)eyebrow.textContent='RECURSOS MICROBIOLÓGICOS';
  const tabs=root.querySelector('.product-tabs');if(tabs)tabs.setAttribute('aria-label','Etapas de medios de cultivo');
  if(view==='register'){
   const rows=Array.from(root.querySelectorAll('tr[data-media-record]'));

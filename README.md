@@ -1,11 +1,9 @@
-# LAB-PSI Microbiología NEXTGEN · V1.0.294
+# LAB-PSI · Microbiología NEXTGEN V1.0.376
 
-Versión única en `src/app-version.js`, `package.json` y `public/version.json`.
+Versión única: `src/app-version.js` (interfaz), `public/version.json` (actualizaciones) y `public/sw.js` (caché).
 
-## Instalación
+## Publicación GitHub / Netlify
+Subir el contenido de esta carpeta a la raíz del repositorio. Netlify: `npm run build`, publicación `dist`.
+No subir `node_modules`, `dist` ni archivos `.env`. Las reglas `firestore.rules` se conservan sin cambios.
 
-`npm install` y `npm run build`. Publicar en GitHub el contenido descomprimido, conservando las carpetas.
-
-## Alcance
-
-Rediseño del acceso institucional y unificación de las versiones visibles. Sin cambios en los cálculos NMP, Firebase, reglas ni flujos de guardado.
+Esta versión compacta parte de V1.0.375. No elimina archivos de código ni estilos utilizados por la aplicación.
